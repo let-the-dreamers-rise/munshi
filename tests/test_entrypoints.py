@@ -94,6 +94,18 @@ def test_agentcore_scan_then_decide_in_one_runtime_session(tmp_path, monkeypatch
     assert agentcore.invoke({"action": "transfer"}, ctx)["ok"] is False
 
 
+def test_the_cli_prints_a_scan_request_agentcore_accepts(tmp_path, capsys, monkeypatch):
+    assert cli(["payload"]) == 0
+    request = json.loads(capsys.readouterr().out)
+    monkeypatch.setenv("MUNSHI_MODEL", "playbook")
+    monkeypatch.setattr(agentcore, "ROOT", tmp_path)
+    assert agentcore.invoke(request, SimpleNamespace(session_id="x" * 40))["ok"]
+    assert cli(["payload", "--days", "30"]) == 0
+    short = json.loads(capsys.readouterr().out)
+    assert len(short["household"]["ledger"]) < len(request["household"]["ledger"])
+    assert len(short["household"]["events"]) == 3
+
+
 def test_the_cli_runs_the_demo_and_decides(tmp_path, capsys):
     home = str(tmp_path / "home")
     assert cli(["demo", "--home", home, "--model", "playbook"]) == 0

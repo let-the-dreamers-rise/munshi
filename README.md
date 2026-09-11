@@ -149,7 +149,23 @@ python -m munshi.run decide card-<id> report --model playbook
 
 `agentcore_app.py` is the entrypoint and `munshi/app.py` the handler. Each household is one AgentCore
 runtime session, so its inbox and paused agent sessions live together; set `MUNSHI_S3_BUCKET` to keep the
-agent sessions in S3 too. The phone sends:
+agent sessions in S3 too. With the starter toolkit (`pip install bedrock-agentcore-starter-toolkit`) and AWS
+credentials that can use Bedrock:
+
+```bash
+agentcore configure -e agentcore_app.py -rf requirements.txt -r us-east-1
+```
+
+```bash
+agentcore deploy --env MUNSHI_MODEL=bedrock
+```
+
+```bash
+python -m munshi.run payload --days 30 > scan.json
+```
+
+Then send it with `agentcore invoke "$(cat scan.json)" -s <a session id of 33+ characters>`, and decide with
+the same session id. (`--days 30` keeps the request under Windows' command-line limit.) The phone sends:
 
 ```json
 {"action": "scan", "household": {"household": "meera", "now": "...", "ledger": [...], "events": [...]}}
