@@ -19,13 +19,13 @@ def locked(path, timeout=30.0):
         try:
             fd = os.open(str(lock), os.O_CREAT | os.O_EXCL | os.O_WRONLY)
             break
-        except FileExistsError:
+        except (FileExistsError, PermissionError):  # Windows says PermissionError while a lock is being deleted
             try:
                 if time.time() - lock.stat().st_mtime > STALE_AFTER:
                     lock.unlink()
                     continue
-            except FileNotFoundError:
-                continue
+            except (FileNotFoundError, PermissionError):
+                pass
             if time.monotonic() > deadline:
                 raise TimeoutError("{0} is locked by another Munshi process".format(path)) from None
             time.sleep(0.01)
@@ -35,5 +35,5 @@ def locked(path, timeout=30.0):
         os.close(fd)
         try:
             lock.unlink()
-        except FileNotFoundError:
+        except (FileNotFoundError, PermissionError):
             pass

@@ -5,7 +5,19 @@ from __future__ import annotations
 import os
 
 DEFAULT_BEDROCK = "us.amazon.nova-pro-v1:0"
-DEFAULT_OLLAMA = "granite3.2:8b"
+DEFAULT_OLLAMA = "qwen2.5:3b"  # calls tools natively through Ollama; granite3.2:8b writes them as text
+
+
+def bedrock_settings():
+    """Model, region, and an Amazon Bedrock Guardrail if MUNSHI_GUARDRAIL_ID is set. The guardrail
+    screens what the model reads and writes; the policy hook still decides what it may call."""
+    settings = {"model_id": os.environ.get("MUNSHI_BEDROCK_MODEL", DEFAULT_BEDROCK),
+                "region_name": os.environ.get("AWS_REGION", "us-east-1"), "temperature": 0.2}
+    guardrail = os.environ.get("MUNSHI_GUARDRAIL_ID")
+    if guardrail:
+        settings.update(guardrail_id=guardrail, guardrail_version=os.environ.get("MUNSHI_GUARDRAIL_VERSION", "DRAFT"),
+                        guardrail_trace="enabled")
+    return settings
 
 
 def make_model(kind=None):
@@ -15,8 +27,7 @@ def make_model(kind=None):
         return Playbook()
     if kind == "bedrock":
         from strands.models import BedrockModel
-        return BedrockModel(model_id=os.environ.get("MUNSHI_BEDROCK_MODEL", DEFAULT_BEDROCK),
-                            region_name=os.environ.get("AWS_REGION", "us-east-1"), temperature=0.2)
+        return BedrockModel(**bedrock_settings())
     if kind == "ollama":
         from strands.models.ollama import OllamaModel
         return OllamaModel(os.environ.get("OLLAMA_HOST", "http://localhost:11434"),

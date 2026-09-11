@@ -7,6 +7,7 @@ license = { text = "MIT" }
 requires-python = ">=3.10"
 dependencies = [
   "strands-agents>=1.55",
+  "botocore[crt]",  # reads credentials from `aws login`
   "pydantic>=2",
   "nyaya @ git+https://github.com/let-the-dreamers-rise/nyaya@0f62ac74538346711de71fad3ed4efbc2fe8b09a",
 ]

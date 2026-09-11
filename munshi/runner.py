@@ -128,7 +128,8 @@ class Runner:
                 self.prefs.trust(card.party)  # the family's word, not the model's
             self.prefs.handle(card.event_id)
             steps = next_steps(event, choice)
-            outcome = "\n".join(steps + ([said] if said and said not in steps else []))
+            repeats = not said or any(step in said for step in steps)
+            outcome = "\n".join(steps + ([] if repeats else [said]))
             return self.inbox.decide(cid, choice, outcome)
 
     def _resume(self, card, choice):

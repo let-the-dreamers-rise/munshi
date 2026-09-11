@@ -119,13 +119,17 @@ python -m munshi.run serve --model playbook
 
 Open http://127.0.0.1:8765. *Replay the afternoon* starts again with the scam five minutes old.
 
-With Amazon Bedrock (default model `us.amazon.nova-pro-v1:0`, override with `MUNSHI_BEDROCK_MODEL`):
+With Amazon Bedrock (default model `us.amazon.nova-pro-v1:0`, override with `MUNSHI_BEDROCK_MODEL`; region from
+`AWS_REGION`). Credentials from `aws login` work because `botocore[crt]` is a dependency. To put an Amazon Bedrock
+Guardrail on everything the model reads and writes, set `MUNSHI_GUARDRAIL_ID` (and `MUNSHI_GUARDRAIL_VERSION`,
+default `DRAFT`). The guardrail screens content; the policy hook still decides which tools can run.
 
 ```bash
 python -m munshi.run serve
 ```
 
-With a local model through Ollama (default `granite3.2:8b`, override with `MUNSHI_OLLAMA_MODEL`):
+With a local model through Ollama (default `qwen2.5:3b`, override with `MUNSHI_OLLAMA_MODEL`; the model must
+support native tool calling in Ollama):
 
 ```bash
 python -m munshi.run serve --model ollama
@@ -191,9 +195,11 @@ entrypoint and the tests.
   unusual payment if it is large, and not at all if it is small.
 - `audit.jsonl`, `inbox.json` and `household.json` hold payees, amounts and the last digits of accounts in
   plain files on the device (or in the AgentCore session). There is no encryption or retention policy yet.
-- Tested with scripted and playbook models, and against a small local model that could not call tools
-  (granite3.2:8b wrote a made-up verdict as prose; the family never saw it, because cards only come from
-  tool results and rules). Not yet run end to end on Bedrock.
+- Not yet run end to end on Bedrock. With real models so far: qwen2.5:3b through Ollama drove the whole loop,
+  from investigation to interrupt to resume ([the audit log](docs/real-model-run.md)), though as the investigator
+  it sometimes fails structured output and the rules answer, as the card records. granite3.2:8b could not call
+  tools at all and wrote a made-up verdict as prose; the family never saw it, because cards only come from tool
+  results and rules.
 - Not affiliated with NPCI, the Indian Cyber Crime Coordination Centre or any bank.
 
 ## Layout
