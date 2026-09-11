@@ -1,0 +1,34 @@
+[project]
+name = "munshi"
+version = "0.1.0"
+description = "The first hour after a UPI scam, handled: a background agent for Indian households, built on Strands Agents"
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.10"
+dependencies = [
+  "strands-agents>=1.55",
+  "pydantic>=2",
+  "nyaya @ git+https://github.com/let-the-dreamers-rise/nyaya@0f62ac74538346711de71fad3ed4efbc2fe8b09a",
+]
+
+[project.optional-dependencies]
+ollama = ["strands-agents[ollama]>=1.55"]
+agentcore = ["bedrock-agentcore>=0.1"]
+dev = ["pytest", "pytest-cov", "bedrock-agentcore>=0.1"]
+
+[project.scripts]
+munshi = "munshi.run:main"
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["munshi"]
+
+[tool.setuptools.package-data]
+munshi = ["static/*.html"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+filterwarnings = ["ignore::DeprecationWarning", "ignore:Support for class-based:DeprecationWarning"]

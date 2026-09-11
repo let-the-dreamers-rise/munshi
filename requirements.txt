@@ -1,0 +1,5 @@
+# For AgentCore Runtime, which builds from requirements.txt. Local installs can use `pip install -e .[dev]`.
+strands-agents>=1.55
+pydantic>=2
+bedrock-agentcore>=0.1
+nyaya @ git+https://github.com/let-the-dreamers-rise/nyaya@0f62ac74538346711de71fad3ed4efbc2fe8b09a

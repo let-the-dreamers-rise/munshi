@@ -1,0 +1,298 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Munshi</title>
+<style>
+:root {
+  --paper: #f7f3ea; --card: #fffdf8; --ink: #1d1b16; --muted: #6b6558; --rule: #e4dccb;
+  --urgent: #b3261e; --urgent-soft: #fbeae7; --on-strong: #ffffff; --calm: #2f5d50; --calm-soft: #e7f0ec; --focus: #1f4fd1;
+  --serif: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+  --sans: system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans", sans-serif;
+  --mono: ui-monospace, "Cascadia Mono", Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root { --paper: #15140f; --card: #1e1c16; --ink: #efe9dc; --muted: #a39b8a; --rule: #353026; --urgent: #ff8a80; --urgent-soft: #3a1b18; --on-strong: #1a0f0d; --calm: #8fd1bb; --calm-soft: #1b2c26; --focus: #8fb0ff; }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--paper); color: var(--ink); font: 16px/1.5 var(--sans); }
+.wrap { max-width: 1080px; margin: 0 auto; padding: 24px 20px 64px; display: grid; gap: 28px;
+        grid-template-columns: minmax(0, 1fr) 320px; }
+@media (max-width: 880px) { .wrap { grid-template-columns: 1fr; } }
+header { grid-column: 1 / -1; display: flex; flex-wrap: wrap; align-items: baseline; gap: 10px 18px;
+         border-bottom: 1px solid var(--rule); padding-bottom: 14px; }
+.mark { font: 600 22px/1 var(--serif); letter-spacing: .02em; }
+.who { color: var(--muted); }
+.pill { margin-left: auto; font-size: 13px; border: 1px solid var(--calm); color: var(--calm);
+        border-radius: 999px; padding: 3px 10px; white-space: nowrap; }
+h2.section { font: 600 13px/1 var(--sans); letter-spacing: .08em; text-transform: uppercase; color: var(--muted);
+             margin: 0 0 12px; }
+section + section { margin-top: 30px; }
+.card { background: var(--card); border: 1px solid var(--rule); border-radius: 10px; padding: 18px 20px; }
+.card + .card { margin-top: 12px; }
+.card.urgent { border: 2px solid var(--urgent); padding: 22px 24px; }
+.kicker { font-size: 13px; font-weight: 600; color: var(--urgent); letter-spacing: .04em; text-transform: uppercase; }
+.card.quiet .kicker { color: var(--calm); }
+.headline { font: 500 22px/1.3 var(--serif); margin: 6px 0 10px; }
+.card.quiet .headline { font-size: 18px; }
+.clock { display: flex; align-items: baseline; gap: 12px; background: var(--urgent-soft); border-radius: 8px;
+         padding: 10px 14px; margin: 12px 0 14px; }
+.clock b { font: 600 34px/1 var(--mono); color: var(--urgent); font-variant-numeric: tabular-nums; }
+.clock span { color: var(--ink); font-size: 14px; }
+ul.facts { margin: 0 0 16px; padding-left: 18px; }
+ul.facts li { margin: 3px 0; }
+.choices { display: flex; flex-wrap: wrap; gap: 10px; }
+button { font: inherit; border-radius: 8px; padding: 10px 16px; cursor: pointer; border: 1px solid var(--rule);
+         background: var(--card); color: var(--ink); }
+button.primary { background: var(--urgent); border-color: var(--urgent); color: var(--on-strong); font-weight: 600; }
+.card.quiet button.primary { background: var(--calm); border-color: var(--calm); }
+button:focus-visible, summary:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+button[disabled] { opacity: .55; cursor: progress; }
+details { margin-top: 16px; border-top: 1px solid var(--rule); padding-top: 12px; }
+summary { cursor: pointer; font-weight: 600; }
+.tabs { display: flex; gap: 6px; margin: 12px 0 10px; flex-wrap: wrap; }
+.tabs button { padding: 6px 12px; font-size: 14px; }
+.tabs button[aria-selected="true"] { border-color: var(--ink); font-weight: 600; }
+.draft { background: var(--paper); border-radius: 8px; padding: 12px 14px; font-size: 14px; }
+.draft p { margin: 0 0 10px; }
+.draft dl { display: grid; grid-template-columns: max-content 1fr; gap: 4px 14px; margin: 0; }
+.draft dt { color: var(--muted); }
+.draft dd { margin: 0; overflow-wrap: anywhere; }
+.draft pre { white-space: pre-wrap; font: 13px/1.5 var(--mono); margin: 0; }
+.copy { margin-top: 10px; font-size: 13px; padding: 6px 12px; }
+.done .headline { font-size: 17px; color: var(--muted); }
+ol.steps { margin: 8px 0 0; padding-left: 20px; }
+.empty { color: var(--muted); }
+aside h2 { margin-top: 0; }
+.log { list-style: none; margin: 0; padding: 0; font-size: 13px; }
+.log li { border-left: 2px solid var(--rule); padding: 2px 0 8px 12px; }
+.log li.refused { border-color: var(--urgent); }
+.log li.waiting { border-color: var(--calm); }
+.log .t { font-family: var(--mono); color: var(--muted); }
+.log .n { font-family: var(--mono); font-weight: 600; }
+.log .r { color: var(--urgent); display: block; }
+.note { font-size: 13px; color: var(--muted); margin-top: 14px; }
+.bar { display: flex; gap: 10px; align-items: center; margin-top: 12px; }
+.error { color: var(--urgent); }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <span class="mark">Munshi</span>
+    <span class="who" id="who">Loading…</span>
+    <span class="pill" title="No tool can move money, and a hook refuses any call outside the allow-list">Never moves money</span>
+  </header>
+  <main id="main" aria-live="polite"></main>
+  <aside>
+    <h2 class="section">What Munshi did</h2>
+    <ul class="log" id="log"></ul>
+    <p class="note">Every tool call, including refused ones, is written to <code>audit.jsonl</code>.
+      Munshi reads bank messages on the phone. Only amounts, payees and times leave it.</p>
+    <div class="bar"><button id="restart" type="button">Replay the afternoon</button></div>
+    <p class="error" id="error" role="alert"></p>
+  </aside>
+</div>
+<script>
+(function () {
+  "use strict";
+  var URGENT = { scam_shaped_payment: 1, unusual_payment: 1 };
+  var TAB_NAMES = { cybercrime_report: "1930 and cybercrime.gov.in", bank_dispute: "Your bank", upi_help: "UPI Help" };
+  var LABELS = { "Amount (Rs)": "Amount (Rs)" };
+  var state = null, timers = [], replay = null;
+
+  function el(tag, attrs, kids) {
+    var node = document.createElement(tag);
+    Object.keys(attrs || {}).forEach(function (k) {
+      if (k === "text") node.textContent = attrs[k];
+      else if (k === "cls") node.className = attrs[k];
+      else if (k.slice(0, 2) === "on") node.addEventListener(k.slice(2), attrs[k]);
+      else node.setAttribute(k, attrs[k]);
+    });
+    (kids || []).forEach(function (kid) { if (kid) node.appendChild(kid); });
+    return node;
+  }
+
+  function parseWhen(s) {
+    var p = s.split(/[- :]/).map(Number);
+    return new Date(p[0], p[1] - 1, p[2], p[3], p[4]);
+  }
+
+  function clock(card) {
+    var deadline = parseWhen(card.when).getTime() + 60 * 60 * 1000;
+    var big = el("b"), words = el("span");
+    var box = el("div", { cls: "clock", role: "timer" }, [big, words]);
+    function tick() {
+      var left = Math.floor((deadline - Date.now()) / 1000);
+      if (left > 0) {
+        big.textContent = Math.floor(left / 60) + ":" + String(left % 60).padStart(2, "0");
+        words.textContent = "left in the first hour, while the bank can still hold the money.";
+      } else {
+        big.textContent = "0:00";
+        words.textContent = "The first hour has passed. Report anyway: 1930 and the bank still act on it.";
+      }
+    }
+    tick();
+    timers.push(setInterval(tick, 1000));
+    return box;
+  }
+
+  function draftView(name, d) {
+    var kids = [];
+    if (name === "cybercrime_report") {
+      kids.push(el("p", { text: d.text }));
+      kids.push(el("dl", {}, [].concat.apply([], Object.keys(d.fields).filter(function (k) { return d.fields[k]; })
+        .map(function (k) { return [el("dt", { text: LABELS[k] || k }), el("dd", { text: d.fields[k] })]; }))));
+    } else if (name === "bank_dispute") {
+      if (d.helpline) kids.push(el("p", { text: "Helpline from the bank's own message: " + d.helpline }));
+      kids.push(el("p", { text: "Subject: " + d.subject }));
+      kids.push(el("pre", { text: d.body }));
+    } else {
+      kids.push(el("p", { text: d.note }));
+      kids.push(el("dl", {}, ["issue", "transaction_ref", "amount", "date", "recipient"].reduce(function (acc, k) {
+        return d[k] ? acc.concat([el("dt", { text: k.replace("_", " ") }), el("dd", { text: String(d[k]) })]) : acc;
+      }, [])));
+    }
+    var box = el("div", { cls: "draft", role: "tabpanel" }, kids);
+    var copy = el("button", { cls: "copy", type: "button", text: "Copy" });
+    copy.addEventListener("click", function () {
+      var text = box.innerText;
+      (navigator.clipboard ? navigator.clipboard.writeText(text) : Promise.reject()).then(
+        function () { copy.textContent = "Copied"; }, function () { copy.textContent = "Select the text to copy"; });
+    });
+    box.appendChild(copy);
+    return box;
+  }
+
+  function drafts(card) {
+    var names = Object.keys(card.drafts || {});
+    if (!names.length) return null;
+    var panel = el("div");
+    var tabs = el("div", { cls: "tabs", role: "tablist" });
+    function show(i) {
+      Array.prototype.forEach.call(tabs.children, function (b, j) { b.setAttribute("aria-selected", String(i === j)); });
+      panel.replaceChildren(draftView(names[i], card.drafts[names[i]]));
+    }
+    names.forEach(function (n, i) {
+      tabs.appendChild(el("button", { type: "button", role: "tab", text: TAB_NAMES[n] || n, onclick: function () { show(i); } }));
+    });
+    show(0);
+    var open = URGENT[card.kind] ? { open: "" } : {};
+    return el("details", open, [el("summary", { text: "The paperwork, already filled in" }), tabs, panel]);
+  }
+
+  function pendingCard(card) {
+    var urgent = !!URGENT[card.kind];
+    var buttons = card.options.map(function (o, i) {
+      return el("button", { type: "button", cls: i === 0 ? "primary" : "", text: o[1],
+        onclick: function (e) { decide(card, o[0], e.currentTarget); } });
+    });
+    return el("article", { cls: "card " + (urgent ? "urgent" : "quiet") }, [
+      el("div", { cls: "kicker", text: urgent ? "Needs you now" : kindLabel(card.kind) }),
+      el("h3", { cls: "headline", text: card.headline }),
+      urgent ? clock(card) : null,
+      el("ul", { cls: "facts" }, card.evidence.map(function (f) { return el("li", { text: f }); })),
+      el("div", { cls: "choices" }, buttons),
+      drafts(card)
+    ]);
+  }
+
+  function reported(card) { return URGENT[card.kind] && card.decision === "report"; }
+
+  function doneCard(card) {
+    var label = (card.options.filter(function (o) { return o[0] === card.decision; })[0] || [0, card.decision])[1];
+    var act = reported(card);
+    return el("article", { cls: "card " + (act ? "urgent" : "done") }, [
+      el("div", { cls: "kicker", text: act ? "Your next steps" : "You chose: " + label }),
+      el("h3", { cls: "headline", text: card.headline }),
+      act ? clock(card) : null,
+      el("ol", { cls: "steps" }, card.outcome.split("\n").filter(Boolean).map(function (s) { return el("li", { text: s }); })),
+      drafts(card)
+    ]);
+  }
+
+  function kindLabel(kind) {
+    return { double_charge: "Charged twice", renewal_due: "Renews soon" }[kind] || "Worth a look";
+  }
+
+  function section(title, cards, make, empty) {
+    var kids = [el("h2", { cls: "section", text: title })];
+    if (!cards.length && empty) kids.push(el("p", { cls: "empty", text: empty }));
+    cards.forEach(function (c) { kids.push(make(c)); });
+    return cards.length || empty ? el("section", {}, kids) : null;
+  }
+
+  function render(s) {
+    state = s;
+    timers.forEach(clearInterval); timers = [];
+    document.getElementById("who").textContent = s.household.charAt(0).toUpperCase() + s.household.slice(1) +
+      "'s household. Watching " + s.watched.payments + " payments over " + s.watched.days + " days, on the phone.";
+    var pending = s.cards.filter(function (c) { return c.status === "pending"; });
+    var now = pending.filter(function (c) { return URGENT[c.kind]; });
+    var later = pending.filter(function (c) { return !URGENT[c.kind]; });
+    var done = s.cards.filter(function (c) { return c.status !== "pending"; }).reverse();
+    var acting = done.filter(reported);
+    var settled = done.filter(function (c) { return !reported(c); });
+    var top = section("Now", now.concat(acting), function (c) { return c.status === "pending" ? pendingCard(c) : doneCard(c); },
+      later.length || done.length ? null : "Nothing needs you. Munshi is watching quietly.");
+    document.getElementById("main").replaceChildren.apply(document.getElementById("main"), [
+      top,
+      section("When you have a minute", later, pendingCard),
+      section("Handled", settled, doneCard)
+    ].filter(Boolean));
+    renderLog(s.audit);
+  }
+
+  function renderLog(rows) {
+    var log = document.getElementById("log");
+    log.replaceChildren.apply(log, rows.slice().reverse().map(function (r) {
+      var cls = r.refused ? "refused" : (r.status === "waiting for the household" ? "waiting" : "");
+      return el("li", { cls: cls }, [
+        el("span", { cls: "t", text: (r.at || "").slice(11, 19) + " " }),
+        el("span", { cls: "n", text: r.tool }),
+        el("span", { text: r.status && r.status !== "success" ? " " + r.status : "" }),
+        r.refused ? el("span", { cls: "r", text: r.refused }) : null
+      ]);
+    }));
+  }
+
+  function call(path, body) {
+    return fetch(path, { method: body ? "POST" : "GET", headers: body ? { "Content-Type": "application/json", "X-Munshi": "1" } : {},
+                         body: body ? JSON.stringify(body) : undefined })
+      .then(function (r) { return r.json(); })
+      .then(function (j) { if (!j.ok) throw new Error(j.error); return j.data; });
+  }
+
+  function busy(on) {
+    document.querySelectorAll("button").forEach(function (b) { b.disabled = on; });
+  }
+
+  function fail(e) {
+    busy(false);
+    document.getElementById("error").textContent = e.message || String(e);
+  }
+
+  function decide(card, choice, button) {
+    document.getElementById("error").textContent = "";
+    busy(true);
+    button.textContent = "Munshi is on it…";
+    var done = replay ? Promise.resolve(replay.decide(card, choice)) : call("/api/decide", { card: card.id, choice: choice });
+    done.then(function (s) { busy(false); render(s); }, fail);
+  }
+
+  document.getElementById("restart").addEventListener("click", function () {
+    busy(true);
+    var again = replay ? Promise.resolve(replay.restart()) : call("/api/restart", {});
+    again.then(function (s) { busy(false); render(s); }, fail);
+  });
+
+  window.munshiRender = render;
+  window.munshiReplay = function (r) { replay = r; render(r.restart()); };
+  if (window.MUNSHI_REPLAY) { window.munshiReplay(window.MUNSHI_REPLAY); }
+  else { call("/api/state").then(render, fail); }
+})();
+</script>
+</body>
+</html>
