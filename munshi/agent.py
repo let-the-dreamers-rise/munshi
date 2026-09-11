@@ -5,7 +5,7 @@ from __future__ import annotations
 from strands import Agent, tool
 from strands.types.tools import ToolContext
 
-from .complaints import bank_dispute, cybercrime_report, upi_help_complaint
+from .complaints import MAKERS
 from .inbox import OPTIONS
 from .verdict import facts_for, investigate, rule_verdict
 
@@ -22,8 +22,11 @@ phone. Handle it completely, then stop.
 4. If the decision is 'fine', call remember_trusted_payee with the payee.
 5. Reply with one short sentence saying what happens next.
 
-You cannot move money: no tool can. You speak to the family only through
-ask_household."""
+Act only by calling tools. Never write a tool's result yourself: facts you
+did not get from a tool do not exist. You cannot move money: no tool can.
+You speak to the family only through ask_household."""
+
+DECISION = "munshi-decision"
 
 NEXT = {
     "report": ["Call 1930 now, inside the first hour, and read them the report fields.",
@@ -79,25 +82,25 @@ def build_tools(household, prefs, investigator_model=None):
         _note(event_id, "verdict", (verdict, who))
         return {"verdict": verdict.model_dump(), "facts": facts, "decided_by": who}
 
-    def _draft(event_id, name, make):
+    def _draft(event_id, name):
         drafts = notes.setdefault(event_id, {}).setdefault("drafts", {})
-        drafts[name] = make(household.event(event_id))
+        drafts[name] = MAKERS[name](household.event(event_id))
         return drafts[name]
 
     @tool
     def draft_cybercrime_report(event_id: str) -> dict:
         """Fill in the 1930 and cybercrime.gov.in report for a suspected scam, with the golden-hour deadline."""
-        return _draft(event_id, "cybercrime_report", cybercrime_report)
+        return _draft(event_id, "cybercrime_report")
 
     @tool
     def draft_bank_dispute(event_id: str) -> dict:
         """Write the dispute letter for the bank, with the reference and the bank's own helpline."""
-        return _draft(event_id, "bank_dispute", bank_dispute)
+        return _draft(event_id, "bank_dispute")
 
     @tool
     def draft_upi_help_complaint(event_id: str) -> dict:
         """Fill in the UPI Help complaint fields. Says so if the payment was not UPI."""
-        return _draft(event_id, "upi_help", upi_help_complaint)
+        return _draft(event_id, "upi_help")
 
     @tool(context=True)
     def ask_household(event_id: str, tool_context: ToolContext) -> dict:
@@ -106,13 +109,20 @@ def build_tools(household, prefs, investigator_model=None):
         event = household.event(event_id)
         verdict, who = notes.get(event_id, {}).get("verdict") or (rule_verdict(event), "rules")
         reason = card_reason(event, household.ledger, verdict, notes.get(event_id, {}).get("drafts", {}), who)
-        choice = tool_context.interrupt("munshi-decision", reason=reason)
+        choice = tool_context.interrupt(DECISION, reason=reason)
+        _note(event_id, "answer", choice)
         return {"event_id": event_id, "party": event.party, "decision": choice,
                 "next_steps": next_steps(event, choice)}
 
     @tool
     def remember_trusted_payee(party: str) -> dict:
-        """Remember that the family trusts this payee, so Munshi never asks about them again."""
+        """Remember that the family trusts this payee, so Munshi never asks about them again.
+        Only works after the family chose 'fine' on a card for this payee."""
+        cleared = [eid for eid, n in notes.items()
+                   if n.get("answer") == "fine" and household.event(eid).party == party]
+        if not cleared:
+            raise ValueError("Only the family can clear a payee, and they have not chosen 'fine' "
+                             "on a card for {0}.".format(party))
         prefs.trust(party)
         return {"trusted": party}
 

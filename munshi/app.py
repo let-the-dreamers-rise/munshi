@@ -12,6 +12,7 @@ to keep the agent sessions in S3 as well.
 
 from __future__ import annotations
 
+import json
 import os
 import re
 from pathlib import Path
@@ -24,8 +25,7 @@ from .witness import Household
 app = BedrockAgentCoreApp()
 ROOT = Path(os.environ.get("MUNSHI_HOME", "/tmp/munshi"))
 SAFE = re.compile(r"[^A-Za-z0-9_-]")
-MAX_ROWS = 20000
-MAX_EVENTS = 200
+MAX_BYTES = 4_000_000
 
 
 def _home(context):
@@ -37,9 +37,9 @@ def _household(payload):
     body = payload.get("household")
     if not isinstance(body, dict):
         raise ValueError("scan needs a household payload")
-    if len(body.get("ledger", ())) > MAX_ROWS or len(body.get("events", ())) > MAX_EVENTS:
-        raise ValueError("household payload is too large")
-    return Household.from_payload(body)
+    if len(json.dumps(body)) > MAX_BYTES:
+        raise ValueError("request is too large")
+    return Household.from_payload(body)  # checks every field; see payload.py
 
 
 def handle(payload, context=None):

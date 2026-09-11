@@ -4,9 +4,12 @@ from __future__ import annotations
 
 import json
 import os
+import re
 from dataclasses import dataclass, field, replace
 from datetime import datetime
 from pathlib import Path
+
+from .filelock import locked
 
 OPTIONS = {
     "scam_shaped_payment": (("report", "Report it now"), ("fine", "I made this payment on purpose")),
@@ -51,6 +54,9 @@ class Card:
         return cls(**data)
 
 
+CARD_ID = re.compile(r"^card-[0-9a-f]{12}$")
+
+
 def card_id(event_id):
     return "card-" + event_id
 
@@ -87,11 +93,13 @@ class Inbox:
 
     def put(self, card):
         stamped = card if card.created else replace(card, created=datetime.now().isoformat(timespec="seconds"))
-        self._save([c for c in self._load() if c.id != stamped.id] + [stamped])
+        with locked(self.path):
+            self._save([c for c in self._load() if c.id != stamped.id] + [stamped])
         return stamped
 
     def decide(self, cid, decision, outcome):
-        done = replace(self.get(cid), status="decided", decision=decision, outcome=outcome,
-                       decided=datetime.now().isoformat(timespec="seconds"))
-        self._save([done if c.id == cid else c for c in self._load()])
+        with locked(self.path):
+            done = replace(self.get(cid), status="decided", decision=decision, outcome=outcome,
+                           decided=datetime.now().isoformat(timespec="seconds"))
+            self._save([done if c.id == cid else c for c in self._load()])
         return done

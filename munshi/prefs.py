@@ -6,6 +6,8 @@ import json
 import os
 from pathlib import Path
 
+from .filelock import locked
+
 
 class Prefs:
     def __init__(self, path):
@@ -18,15 +20,16 @@ class Prefs:
         return {"trusted": list(data.get("trusted", [])), "handled": list(data.get("handled", []))}
 
     def _add(self, key, value):
-        data = self.load()
-        if value in data[key]:
-            return data
-        updated = {**data, key: data[key] + [value]}
-        self.path.parent.mkdir(parents=True, exist_ok=True)
-        tmp = self.path.with_suffix(".tmp")
-        tmp.write_text(json.dumps(updated, indent=1), encoding="utf-8")
-        os.replace(tmp, self.path)
-        return updated
+        with locked(self.path):
+            data = self.load()
+            if value in data[key]:
+                return data
+            updated = {**data, key: data[key] + [value]}
+            self.path.parent.mkdir(parents=True, exist_ok=True)
+            tmp = self.path.with_suffix(".tmp")
+            tmp.write_text(json.dumps(updated, indent=1), encoding="utf-8")
+            os.replace(tmp, self.path)
+            return updated
 
     def trust(self, party):
         return self._add("trusted", party)

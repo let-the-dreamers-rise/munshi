@@ -71,6 +71,17 @@ def bank_dispute(event):
     return {"subject": subject, "body": body, "helpline": event.helpline, "bank": event.bank}
 
 
+MAKERS = {"cybercrime_report": lambda e: cybercrime_report(e), "bank_dispute": lambda e: bank_dispute(e),
+          "upi_help": lambda e: upi_help_complaint(e)}
+FOR_RECOMMENDATION = {"report_now": ("cybercrime_report", "bank_dispute", "upi_help"),
+                      "dispute": ("bank_dispute", "upi_help")}
+
+
+def drafts_for(event, recommended):
+    """Every draft a recommendation calls for. Pure templates, so the safety net can use them too."""
+    return {name: MAKERS[name](event) for name in FOR_RECOMMENDATION.get(recommended, ())}
+
+
 def upi_help_complaint(event):
     """The fields UPI Help asks for. It only applies to UPI payments."""
     applies = event.channel == "upi" or "@" in event.party

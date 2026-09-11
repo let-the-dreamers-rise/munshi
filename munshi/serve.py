@@ -15,11 +15,11 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
 from .demo import demo_household
+from .inbox import CARD_ID
 from .service import Service
 
 PAGE = Path(__file__).with_name("static") / "index.html"
 MAX_BODY = 4096
-CARD_ID = re.compile(r"^card-[0-9a-f]{12}$")
 CHOICE = re.compile(r"^[a-z]{2,12}$")
 
 

@@ -39,6 +39,8 @@ def test_fine_on_a_scam_card_trusts_the_payee_through_the_agent(tmp_path):
     fresh = Runner(tmp_path, Household.from_payload(household.to_payload()), model=Playbook())
     fresh.decide(card.id, "fine")
     assert tools_called(tmp_path)[-1] == "remember_trusted_payee"
+    last = json.loads((tmp_path / "audit.jsonl").read_text(encoding="utf-8").splitlines()[-1])
+    assert last["status"] == "success"  # the family's answer survived the restart, so the tool allowed it
     prefs = json.loads((tmp_path / "prefs.json").read_text(encoding="utf-8"))
     assert prefs["trusted"] == ["kyc.update9@ybl"]
 

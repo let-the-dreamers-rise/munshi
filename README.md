@@ -79,6 +79,13 @@ flowchart LR
 
 - **No tool can move money.** The tools take an event id, a payee or a number of days. None takes free
   text, so no argument can carry an instruction.
+- **Event data is checked, and it cannot unlock anything.** A payee's display name comes from an SMS a
+  scammer can influence, so it could try to read like an instruction. Every field that reaches the agent is
+  checked against the shape the witness produces (`payload.py`: a UPI id or merchant name, digits for
+  references, scam words only from Munshi's own list, known evidence keys), and a hand-built or tampered
+  payload is refused. The investigator is told the event is data. And the one tool that changes what
+  Munshi watches, `remember_trusted_payee`, refuses unless the family chose *fine* on that payee's card;
+  the runner records the family's choice itself, whatever the model does.
 - **`PolicyHook`** (`BeforeToolCallEvent`) cancels any call to a tool outside the allow-list, or with an
   argument outside that tool's schema, before it runs: *Munshi never moves money and only calls its own
   tools.* The investigator gets its own allow-list, which contains only its `Verdict` output.
@@ -88,7 +95,11 @@ flowchart LR
   come from the ledger. The complaint drafts are templates filled from the bank's message. A model writes
   one headline and picks a recommendation from a closed set.
 - **A safety net.** If a model finishes without asking, the witness raised the event for a reason, so the
-  family gets the card anyway, with the rules' verdict.
+  family gets the card anyway, with the rules' verdict and the paperwork it calls for.
+- **Crash-safe asking.** If the process dies after the agent asked but before the card was saved, the next
+  run finds the pending interrupt in the saved session and files the card without calling the model again.
+  If it dies after the family answered, the retry closes the card without resuming twice. Writes to the
+  inbox and preferences take a lock that works across processes.
 - **The data rule.** Message bodies never leave the phone. A test checks that the payload holds no text.
 - **The local inbox** binds to 127.0.0.1, checks the Host header (DNS rebinding) and only accepts state
   changes that are JSON with an `X-Munshi` header, which another origin cannot send without a preflight.
@@ -178,12 +189,18 @@ entrypoint and the tests.
   the family acts.
 - A scam is recognised by its shape. A scam that arrives as a phone call, with no message, shows up as an
   unusual payment if it is large, and not at all if it is small.
+- `audit.jsonl`, `inbox.json` and `household.json` hold payees, amounts and the last digits of accounts in
+  plain files on the device (or in the AgentCore session). There is no encryption or retention policy yet.
+- Tested with scripted and playbook models, and against a small local model that could not call tools
+  (granite3.2:8b wrote a made-up verdict as prose; the family never saw it, because cards only come from
+  tool results and rules). Not yet run end to end on Bedrock.
 - Not affiliated with NPCI, the Indian Cyber Crime Coordination Centre or any bank.
 
 ## Layout
 
 ```
 munshi/witness.py     messages -> ledger rows and events (on the phone)
+munshi/payload.py     the shape of everything that crosses to the agent
 munshi/ledger.py      the ledger the agent may query
 munshi/complaints.py  1930 / portal, bank dispute, UPI Help drafts
 munshi/policy.py      PolicyHook, AuditHook, the allow-list

@@ -12,7 +12,6 @@ from __future__ import annotations
 
 import hashlib
 import re
-from collections import Counter
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 
@@ -20,6 +19,7 @@ from nyaya.money.sources import transactions as _parse
 from nyaya.money.witness import SCAM_WORDS
 
 from .ledger import Ledger, Row
+from .payload import check_payload
 
 SCAM_WINDOW = timedelta(minutes=30)
 DOUBLE_WINDOW = timedelta(minutes=15)
@@ -121,14 +121,16 @@ def _scam_context(row, people):
 
 
 def _payments(rows, messages, now):
-    outs = [r for r in rows if r.direction == "out"]
-    counts = Counter(r.party for r in outs)
+    outs = sorted((r for r in rows if r.direction == "out"), key=lambda r: r.when)
     usual = _median([r.amount for r in outs])
     people = [m for m in messages if _is_person(m.get("sender"))]
+    paid_before = set()
     events = []
     for r in outs:
+        first = r.party not in paid_before  # first time as of this payment, not over all history
+        paid_before.add(r.party)
         recent = timedelta(0) <= now - r.when <= RECENT
-        if not recent or not r.party or counts[r.party] != 1 or r.channel == "atm":
+        if not recent or not r.party or not first or r.channel == "atm":
             continue
         times = round(r.amount / usual, 1) if usual else None
         hit = _scam_context(r, people)
@@ -211,7 +213,11 @@ def detect(messages, now=None, prefs=None):
     prefs = prefs or {}
     trusted = set(prefs.get("trusted", ()))
     handled = set(prefs.get("handled", ()))
-    events = _payments(rows, messages, now) + _double_charges(rows, now) + _renewals(rows, now)
+    payments = _payments(rows, messages, now)
+    flagged = {e.party for e in payments}
+    # Paying a scammer twice is not a merchant's double charge; the scam event covers it.
+    doubles = [e for e in _double_charges(rows, now) if e.party not in flagged]
+    events = payments + doubles + _renewals(rows, now)
     kept = [e for e in events if e.party not in trusted and e.id not in handled]
     return sorted(kept, key=lambda e: e.when)
 
@@ -243,6 +249,8 @@ class Household:
 
     @classmethod
     def from_payload(cls, payload):
+        """Refuses anything the witness could not have produced. See payload.py."""
+        check_payload(payload)
         return cls(payload["household"], Ledger(Row.from_dict(r) for r in payload.get("ledger", ())),
                    tuple(Event.from_dict(e) for e in payload.get("events", ())),
                    datetime.strptime(payload["now"], TIME))
