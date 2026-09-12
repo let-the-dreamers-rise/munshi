@@ -119,6 +119,10 @@ def test_messages_with_nothing_wrong_are_a_quiet_answer_not_an_error():
     assert out["state"]["watched"]["payments"] == 2
 
 
+def test_a_ping_wakes_the_function_and_says_nothing_else():
+    assert handle({"action": "ping"}) == {"ready": True}
+
+
 def test_a_giant_paste_is_refused():
     with pytest.raises(ValueError, match="too long"):
         handle({"action": "start", "sms": "x" * 200_000})

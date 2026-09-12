@@ -79,8 +79,10 @@ def _decide(request):
 
 
 def handle(request):
-    """'start' (optionally with pasted `sms`) or 'decide' (with `session`, `card`, `choice`)."""
+    """'start' (optionally with pasted `sms`), 'decide' (`session`, `card`, `choice`), or 'ping'."""
     action = (request or {}).get("action")
+    if action == "ping":
+        return {"ready": True}  # the page wakes the function while someone is still reading
     if action == "start":
         return _start(request)
     if action == "decide":

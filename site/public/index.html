@@ -242,11 +242,22 @@
     run(text);
   });
   M.ready();
+  // Wake the function while the reader is still on the first paragraph, so the first run is not a cold start.
+  M.post("/api/munshi", { action: "ping" }).then(function () {}, function () {});
   M.byId("restart").addEventListener("click", function () { session = null; run(adapter.sms); });
 
   // Deep links, so a link can open straight to the card: ?demo runs Meera's afternoon, ?paste opens the box.
-  if (/[?&]demo\b/.test(location.search)) { run(null); }
-  else if (/[?&]paste\b/.test(location.search)) { show("paste"); }
+  // ?auto also answers the card once it appears, so the run can be recorded without a hand on the mouse.
+  if (/[?&]demo\b/.test(location.search) || /[?&]auto\b/.test(location.search)) {
+    run(null);
+    if (/[?&]auto\b/.test(location.search)) { waitThenAnswer(0); }
+  } else if (/[?&]paste\b/.test(location.search)) { show("paste"); }
+
+  function waitThenAnswer(tries) {
+    var button = document.querySelector(".card.urgent .choices button.primary");
+    if (button) { setTimeout(function () { button.click(); }, 6000); return; }
+    if (tries < 60) { setTimeout(function () { waitThenAnswer(tries + 1); }, 500); }
+  }
 })();
 </script>
 </body>
