@@ -50,8 +50,10 @@ def facts_for(event, ledger):
     before = history["times_paid"] - 1 if event.kind in ("scam_shaped_payment", "unusual_payment") else None
     out = []
     if before == 0:
+        days = ledger.history_days()
         out.append("{0} had never been paid before: this is the first payment in {1} days of history.".format(
-            event.party, ledger.history_days()))
+            event.party, days) if days >= 2 else
+            "There is no earlier payment to {0} in these messages.".format(event.party))
     if event.kind == "scam_shaped_payment":
         out.append("The payment came {0} minutes after a message from {1} containing {2}.".format(
             ev.get("minutes_after_message"), ev.get("suspect_contact") or "an unknown number",

@@ -10,18 +10,37 @@
 </head>
 <body>
 <section class="hero" id="hero">
-  <p class="mark">Munshi</p>
-  <h1>The first hour after a UPI scam, handled.</h1>
-  <p class="lede">A message says your account will be blocked. Minutes later Rs 12,000 is gone. In the hour that
-    follows, a report on <b>1930</b> can still have the money held — if you can produce a reference number, the
-    payee's UPI id and the exact time. All of it is already in the bank's own SMS.</p>
-  <p class="lede">Munshi reads that SMS, fills in the police report, the bank dispute and the UPI Help complaint,
-    and asks you one question. <b>It never moves money.</b></p>
-  <div class="bar">
-    <button class="go primary" id="watch" type="button">Watch it happen</button>
-    <button class="go" id="own" type="button">Try it on your own message</button>
+  <div>
+    <p class="mark">Munshi</p>
+    <h1>The first hour after a UPI scam, handled.</h1>
+    <p class="lede">In that hour, a report on <b>1930</b> can still have the money held — if you can produce the
+      reference number, the payee's UPI id and the exact time. All of it is already in the bank's own SMS, and
+      nobody who has just been robbed is in any state to go looking.</p>
+    <p class="lede">Munshi reads that SMS, fills in the police report, the bank dispute and the UPI Help
+      complaint, and asks you one question. <b>It never moves money.</b></p>
+    <div class="bar">
+      <button class="go primary" id="watch" type="button">Watch it happen</button>
+      <button class="go" id="own" type="button">Try it on your own message</button>
+    </div>
+    <p class="small" id="privacy">Nothing is stored. The run lives in this browser tab and is gone when you close
+      it.</p>
   </div>
-  <p class="small" id="privacy">Nothing is stored. The run lives in this browser tab and is gone when you close it.</p>
+  <div class="thread" aria-hidden="true">
+    <div class="sms threat">
+      <span class="from">+91 98112 34567 · 14:46</span>
+      Dear customer your SBI account will be BLOCKED today. Update KYC immediately at http://sbi-kyc-update.in
+    </div>
+    <p class="gap">nine minutes later</p>
+    <div class="sms">
+      <span class="from">VM-HDFCBK · 14:55</span>
+      Sent <span class="amt">Rs.12,000.00</span> From HDFC Bank A/C *4521 To kyc.update9@ybl On 12/09/26
+      Ref 624511873920. Not You? Call 18002586161
+    </div>
+    <div class="verdict">
+      <b>Rs 12,000 went to someone you have never paid, nine minutes after a threat.</b>
+      <span>Munshi noticed, and the first hour is already running.</span>
+    </div>
+  </div>
 </section>
 
 <section class="paste" id="paste" hidden>

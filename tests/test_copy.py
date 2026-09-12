@@ -12,6 +12,15 @@ def only(*groups):
     return event, household.ledger
 
 
+def test_a_first_time_payee_reads_sensibly_when_there_is_no_history():
+    """Pasted into a web page, a thread has no months behind it. The fact must not say '0 days'."""
+    from munshi.witness import Household as H
+    household = H.from_messages("you", scam_afternoon(), now=NOW)
+    facts = facts_for(household.events[0], household.ledger)
+    assert not any("0 days" in f for f in facts)
+    assert any("no earlier payment" in f for f in facts)
+
+
 def test_the_scam_headline_names_the_scam_without_repeating_the_evidence():
     event, ledger = only(scam_afternoon())
     headline = rule_verdict(event).headline

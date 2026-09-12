@@ -123,6 +123,16 @@
     ]);
   }
 
+  function plural(n, one) { return n + " " + one + (n === 1 ? "" : "s"); }
+
+  function watching(s) {
+    var payments = plural(s.watched.payments, "payment");
+    if (s.household === "you") return "Your messages: " + payments + " read, nothing kept.";
+    var name = s.household.charAt(0).toUpperCase() + s.household.slice(1);
+    return name + "'s household. Watching " + payments +
+      (s.watched.days >= 2 ? " over " + s.watched.days + " days" : "") + ", on the phone.";
+  }
+
   function section(title, cards, make, empty) {
     var kids = [el("h2", { cls: "section", text: title })];
     if (!cards.length && empty) kids.push(el("p", { cls: "empty", text: empty }));
@@ -134,11 +144,7 @@
     timers.forEach(clearInterval);
     timers = [];
     var who = byId("who");
-    if (who) {
-      who.textContent = s.household.charAt(0).toUpperCase() + s.household.slice(1) +
-        (s.household === "you" ? "r messages. " : "'s household. ") + "Watching " + s.watched.payments +
-        " payments over " + s.watched.days + " days, on the phone.";
-    }
+    if (who) who.textContent = watching(s);
     var pending = s.cards.filter(function (c) { return c.status === "pending"; });
     var now = pending.filter(function (c) { return URGENT[c.kind]; });
     var later = pending.filter(function (c) { return !URGENT[c.kind]; });
