@@ -50,7 +50,7 @@ call the agent made.
 ```mermaid
 flowchart LR
   subgraph Phone["On the phone (no model, no network)"]
-    SMS[Bank SMS] --> W["Witness<br/>nyaya.money parser + munshi.witness"]
+    SMS[Bank SMS] --> W["Witness<br/>nyaya.money parser + munshi.readers + munshi.witness"]
     W --> P["Household payload<br/>ledger rows + events<br/>no message text"]
   end
   subgraph Cloud["Amazon Bedrock AgentCore Runtime"]
@@ -208,7 +208,10 @@ resumed by a fresh process that only has the files on disk.
 
 Munshi uses **`nyaya.money`** from [nyaya](https://github.com/let-the-dreamers-rise/nyaya), the author's
 earlier MIT project, pinned to one commit. From it come the SMS parser, its list of scam words and the
-synthetic 100-day household used in the demo, with nyaya's own scam removed.
+synthetic 100-day household used in the demo, with nyaya's own scam removed. The dependency is not
+modified: the formats it cannot read on its own (SBI's currency-less "debited by 2500.0", a payee hidden
+behind "trf to", a merchant on an Axis card line, a mandate notice that is not a payment yet) are repaired
+in `munshi/readers.py`, against a corpus of real formats in `tests/test_readers.py`.
 
 Everything in this repository was written for the hackathon: the events (scam-shaped payment, double
 charge, renewal), the payload contract, the complaint drafts, the Strands agents and tools, the policy and
@@ -226,7 +229,8 @@ entrypoint and the tests.
 ## Limits
 
 - The demo household is synthetic. Munshi has not been used by a real family yet.
-- It only reads the message formats `nyaya.money` parses. Anything else is skipped, not guessed.
+- It only reads the message formats in `tests/test_readers.py` (HDFC, SBI, ICICI, Axis, Kotak, PNB, Bank of
+  Baroda, wallets; UPI, cards, NEFT/IMPS and ATM). Anything else is skipped, not guessed.
 - It cannot file for you. 1930 is a phone call and the portal needs the victim's own login. Munshi prepares;
   the family acts.
 - A scam is recognised by its shape. A scam that arrives as a phone call, with no message, shows up as an
@@ -244,6 +248,7 @@ entrypoint and the tests.
 
 ```
 munshi/witness.py     messages -> ledger rows and events (on the phone)
+munshi/readers.py     the bank SMS formats the parser cannot read on its own
 munshi/scams.py       the scam vocabulary, grouped into the scripts it names
 munshi/payload.py     the shape of everything that crosses to the agent
 munshi/ledger.py      the ledger the agent may query

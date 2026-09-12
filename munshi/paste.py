@@ -13,7 +13,7 @@ from __future__ import annotations
 import re
 from datetime import datetime, timedelta
 
-from nyaya.money.parse import parse_message
+from .readers import read
 
 BANK = "VM-HDFCBK"
 STRANGER = "+910000000000"
@@ -41,7 +41,7 @@ def _block(text, when):
     said = _time(stamp.group(1)) if stamp else None
     body = _AT.sub("", _FROM.sub("", text)).strip()
     if not sender:
-        sender = BANK if parse_message(when, BANK, body) else STRANGER
+        sender = BANK if read(when, BANK, body) else STRANGER
     return {"when": said or when, "sender": sender, "body": body}
 
 
@@ -58,6 +58,6 @@ def messages_from_text(text, now=None):
     messages = []
     for i, block in enumerate(reversed(blocks)):  # the last pasted message is the most recent
         messages.insert(0, _block(block, now - SPACING * i))
-    if not any(parse_message(m["when"], m["sender"], m["body"]) for m in messages):
+    if not any(read(m["when"], m["sender"], m["body"]) for m in messages):
         raise ValueError("none of that reads as a bank message about a payment")
     return messages

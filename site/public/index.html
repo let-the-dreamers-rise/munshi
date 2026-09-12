@@ -52,7 +52,8 @@
     <button id="example2" type="button">Example: digital arrest</button>
     <span class="error" id="paste-error" role="alert"></span>
   </div>
-  <p class="hint">Paste the real SMS from your bank, with a blank line between messages, oldest first. Nothing is
+  <p class="hint">Paste the real SMS from your bank, with a blank line between messages, oldest first. HDFC, SBI,
+    ICICI, Axis, Kotak, PNB, Bank of Baroda and wallet formats are read, cards and UPI alike. Nothing is
     stored: the text is read once, in memory, and never written down. You can add <code>from: +9198…</code> or
     <code>at: 12/09/2026 14:55</code> as the first line of a message; otherwise Munshi works out which are from a
     bank and spaces them a few minutes apart.</p>
@@ -94,7 +95,9 @@
         and customs, task-and-job, screen sharing — which is the first thing 1930 asks for.</p>
       <p>If the rules see nothing, no agent runs and nothing leaves the phone. The message text itself never
         travels — only the facts of the one event.</p>
-      <p class="src"><code>munshi/witness.py</code>, on top of the MIT-licensed <code>nyaya.money</code> parser.</p>
+      <p class="src"><code>munshi/witness.py</code> and <code>munshi/readers.py</code>, on top of the MIT-licensed
+        <code>nyaya.money</code> parser — tested against a corpus of the formats HDFC, SBI, ICICI, Axis, Kotak, PNB
+        and Bank of Baroda really send.</p>
     </li>
     <li>
       <h3>One Strands agent per event</h3>

@@ -1,7 +1,8 @@
 """The witness: bank and UPI messages in, events out. No model, no network, $0.
 
 Parsing a single message is done by `nyaya.money`, the author's earlier MIT
-project, and is disclosed in the README. What is new here is the event
+project, and is disclosed in the README; `readers.py` repairs the formats it
+cannot read on its own. What is new here is the event
 contract, because it is the only thing that ever leaves the phone. Message
 bodies never cross it: only the fields a report needs (amount, payee, time,
 bank, reference, the bank's own helpline) and, for a scam, the number the
@@ -15,10 +16,9 @@ import re
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 
-from nyaya.money.sources import transactions as _parse
-
 from .ledger import Ledger, Row
 from .payload import check_payload
+from .readers import transactions as _parse
 from .scams import classify, words_in
 
 SCAM_WINDOW = timedelta(minutes=30)
