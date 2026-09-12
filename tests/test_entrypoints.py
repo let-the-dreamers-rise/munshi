@@ -46,6 +46,9 @@ POST = {"Content-Type": "application/json", "X-Munshi": "1"}
 def test_the_inbox_serves_the_page_and_three_cards(server):
     status, page = request(server + "/")
     assert status == 200 and b"Never moves money" in page
+    for asset, kind in (("/munshi.css", b".card"), ("/munshi.js", b"Munshi.mount")):
+        code, body = request(server + asset)
+        assert code == 200 and kind in body
     status, body = request(server + "/api/state")
     assert body["ok"] and sorted(c["kind"] for c in body["data"]["cards"]) == [
         "double_charge", "renewal_due", "scam_shaped_payment"]

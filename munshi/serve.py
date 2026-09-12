@@ -18,7 +18,9 @@ from .demo import demo_household
 from .inbox import CARD_ID
 from .service import Service
 
-PAGE = Path(__file__).with_name("static") / "index.html"
+STATIC = Path(__file__).with_name("static")
+PAGE = STATIC / "index.html"
+ASSETS = {"/munshi.css": "text/css", "/munshi.js": "application/javascript"}
 MAX_BODY = 4096
 CHOICE = re.compile(r"^[a-z]{2,12}$")
 
@@ -87,6 +89,8 @@ def handler_for(inbox, port):
                 return
             if self.path == "/":
                 self._send(200, PAGE.read_bytes(), "text/html")
+            elif self.path in ASSETS:
+                self._send(200, (STATIC / self.path.lstrip("/")).read_bytes(), ASSETS[self.path])
             elif self.path == "/api/state":
                 self._json(200, inbox.state())
             else:

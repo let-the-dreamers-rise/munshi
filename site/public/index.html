@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Munshi — the first hour after a UPI scam, handled</title>
+<meta name="description" content="Munshi reads the bank messages a family already gets, fills in the 1930, bank and UPI Help paperwork, and asks one question. It never moves money.">
+<link rel="stylesheet" href="munshi.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='26' font-size='26'>र</text></svg>">
+</head>
+<body>
+<section class="hero" id="hero">
+  <p class="mark">Munshi</p>
+  <h1>The first hour after a UPI scam, handled.</h1>
+  <p class="lede">A message says your account will be blocked. Minutes later Rs 12,000 is gone. In the hour that
+    follows, a report on <b>1930</b> can still have the money held — if you can produce a reference number, the
+    payee's UPI id and the exact time. All of it is already in the bank's own SMS.</p>
+  <p class="lede">Munshi reads that SMS, fills in the police report, the bank dispute and the UPI Help complaint,
+    and asks you one question. <b>It never moves money.</b></p>
+  <div class="bar">
+    <button class="go primary" id="watch" type="button">Watch it happen</button>
+    <button class="go" id="own" type="button">Try it on your own message</button>
+  </div>
+  <p class="small" id="privacy">Nothing is stored. The run lives in this browser tab and is gone when you close it.</p>
+</section>
+
+<section class="paste" id="paste" hidden>
+  <label class="sr" for="sms">Your bank messages</label>
+  <textarea id="sms" spellcheck="false" placeholder="Paste the messages, oldest first, with a blank line between them."></textarea>
+  <div class="bar">
+    <button class="primary" id="read" type="button">Read these messages</button>
+    <button id="example" type="button">Use an example</button>
+  </div>
+  <p class="hint">Paste the real SMS from your bank, with a blank line between messages, oldest first. Nothing is
+    stored: the text is read once, in memory, and never written down. You can add <code>from: +9198…</code> or
+    <code>at: 12/09/2026 14:55</code> as the first line of a message; otherwise Munshi works out which are from a
+    bank and spaces them a few minutes apart.</p>
+</section>
+
+<div class="wrap" id="app" hidden>
+  <header>
+    <span class="mark">Munshi</span>
+    <span class="who" id="who"></span>
+    <span class="pill" title="No tool can move money, and a hook refuses any call outside the allow-list">Never moves money</span>
+  </header>
+  <main id="main" aria-live="polite"></main>
+  <aside>
+    <h2 class="section">What Munshi just did</h2>
+    <ul class="log" id="log"></ul>
+    <p class="note">Every tool call the agent made, refused ones included. Munshi has no tool that can move money,
+      and a hook refuses anything outside its list.</p>
+    <div class="bar">
+      <button id="restart" type="button">Start again</button>
+      <button id="mine" type="button">Use my own message</button>
+    </div>
+    <p class="error" id="error" role="alert"></p>
+  </aside>
+</div>
+
+<section class="steps3">
+  <div>
+    <h3>On the phone</h3>
+    <p>A deterministic witness turns bank SMS into events. Message text never leaves the device — only amounts,
+      payees and times.</p>
+  </div>
+  <div>
+    <h3>In the agent</h3>
+    <p>A Strands agent investigates, drafts the paperwork, and pauses on a real interrupt to ask the family. The
+      paused session is saved, so the answer can come hours later.</p>
+  </div>
+  <div>
+    <h3>To the right people</h3>
+    <p>1930, the bank's own helpline and UPI Help. Munshi prepares; you act. It hands off rather than pretending
+      to be the authority.</p>
+  </div>
+</section>
+
+<footer>
+  <p>Munshi is open source (MIT): <a href="https://github.com/let-the-dreamers-rise/munshi">github.com/let-the-dreamers-rise/munshi</a>.
+    Built on <a href="https://strandsagents.com">Strands Agents</a> for the AWS Agents for Humans hackathon.
+    Not affiliated with NPCI, the Indian Cyber Crime Coordination Centre or any bank. Munshi prepares complaints;
+    it cannot file them for you, and it never moves money.</p>
+  <p id="engine"></p>
+</footer>
+
+<script src="munshi.js"></script>
+<script>
+(function () {
+  "use strict";
+  var M = window.Munshi;
+  var session = null;
+  var EXAMPLE = [
+    "from: +919811234567",
+    "Dear customer your SBI account will be BLOCKED today. Update KYC immediately at http://sbi-kyc-update.in",
+    "",
+    "Sent Rs.12000.00 From HDFC Bank A/C *4521 To kyc.update9@ybl On 12/09/26 Ref 624511873920",
+    "Not You? Call 18002586161/SMS BLOCK UPI to 7308080808"
+  ].join("\n");
+
+  function show(which) {
+    M.byId("paste").hidden = which !== "paste";
+    M.byId("app").hidden = which !== "app";
+    M.byId("hero").hidden = which === "app";
+  }
+
+  function working(on, what) {
+    var box = M.byId("error");
+    box.className = on ? "working" : "error";
+    box.replaceChildren.apply(box, on ? [M.el("b"), M.el("span", { text: what })] : []);
+  }
+
+  function api(body) {
+    return M.post("/api/munshi", body).then(function (data) {
+      session = data.session;
+      return data.state;
+    });
+  }
+
+  var adapter = {
+    sms: null,
+    start: function () { return api({ action: "start", sms: this.sms }); },
+    decide: function (card, choice) {
+      working(true, "Munshi is resuming the paused session and acting on your answer…");
+      return api({ action: "decide", session: session, card: card.id, choice: choice })
+        .then(function (s) { working(false); return s; });
+    }
+  };
+
+  function run(sms) {
+    adapter.sms = sms || null;
+    show("app");
+    working(true, sms ? "Munshi is reading your messages…" : "Munshi is watching Meera's phone…");
+    M.mount(adapter).then(function () { working(false); }, function (e) {
+      working(false);
+      if (sms) { show("paste"); }
+      M.fail(e);
+    });
+  }
+
+  M.byId("watch").addEventListener("click", function () { run(null); });
+  M.byId("own").addEventListener("click", function () {
+    show("paste");
+    M.byId("sms").focus();
+  });
+  M.byId("mine").addEventListener("click", function () { show("paste"); M.byId("sms").focus(); });
+  M.byId("example").addEventListener("click", function () { M.byId("sms").value = EXAMPLE; });
+  M.byId("read").addEventListener("click", function () {
+    var text = M.byId("sms").value.trim();
+    if (!text) { M.byId("sms").focus(); return; }
+    run(text);
+  });
+  M.byId("restart").addEventListener("click", function () { session = null; run(adapter.sms); });
+})();
+</script>
+</body>
+</html>

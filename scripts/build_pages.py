@@ -14,6 +14,8 @@ from __future__ import annotations
 import json
 import shutil
 import sys
+
+SHARED = ("munshi.css", "munshi.js")
 import tempfile
 from datetime import datetime
 from pathlib import Path
@@ -48,11 +50,14 @@ def record(work):
 def main():
     with tempfile.TemporaryDirectory() as tmp:
         data = record(Path(tmp))
-    page = (ROOT / "munshi" / "static" / "index.html").read_text(encoding="utf-8")
+    static = ROOT / "munshi" / "static"
+    page = (static / "index.html").read_text(encoding="utf-8")
     if MARKER not in page:
         raise SystemExit("index.html changed: cannot find where to add the replay script")
     docs = ROOT / "docs"
     docs.mkdir(exist_ok=True)
+    for name in SHARED:
+        shutil.copyfile(static / name, docs / name)
     (docs / "index.html").write_text(page.replace(MARKER, '<script src="replay.js"></script>\n' + MARKER, 1),
                                      encoding="utf-8")
     (docs / "replay.js").write_text("window.MUNSHI_REPLAY = " + json.dumps(data, indent=1) + ";\n", encoding="utf-8")
