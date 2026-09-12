@@ -78,21 +78,66 @@
   </aside>
 </div>
 
-<section class="steps3">
-  <div>
-    <h3>On the phone</h3>
-    <p>A deterministic witness turns bank SMS into events. Message text never leaves the device — only amounts,
-      payees and times.</p>
-  </div>
-  <div>
-    <h3>In the agent</h3>
-    <p>A Strands agent investigates, drafts the paperwork, and pauses on a real interrupt to ask the family. The
-      paused session is saved, so the answer can come hours later.</p>
-  </div>
-  <div>
-    <h3>To the right people</h3>
-    <p>1930, the bank's own helpline and UPI Help. Munshi prepares; you act. It hands off rather than pretending
-      to be the authority.</p>
+<section class="how" id="how">
+  <h2>How it works</h2>
+  <p class="lede">Five steps, in the order they happen. Everything here is in the repository, and the audit log on
+    the right of the run is the same list of calls, written as they happened.</p>
+  <ol>
+    <li>
+      <h3>A witness reads the bank's own SMS</h3>
+      <p>Ordinary code, no model: it parses the messages into rows — amount, payee, time, reference number, the
+        bank's helpline — and rules decide what deserves a household's attention. Money to a payee never paid
+        before, minutes after a threatening message. A subscription about to renew. The same merchant charging
+        twice.</p>
+      <p>If the rules see nothing, no agent runs and nothing leaves the phone. The message text itself never
+        travels — only the facts of the one event.</p>
+      <p class="src"><code>munshi/witness.py</code>, on top of the MIT-licensed <code>nyaya.money</code> parser.</p>
+    </li>
+    <li>
+      <h3>One Strands agent per event</h3>
+      <p>Its tools are closures over that event's ledger: investigate the payment, draft the UPI Help complaint,
+        draft the bank dispute, draft the 1930 report, ask the household, remember a trusted payee. A
+        <code>BeforeToolCallEvent</code> hook cancels any call outside the allow-list or with wrong-typed
+        arguments; an <code>AfterToolCallEvent</code> hook records every call, refused ones included.</p>
+      <p>There is no tool that moves money, so no message, however worded, can make it move money.</p>
+      <p class="src"><code>munshi/agent.py</code>, <code>munshi/policy.py</code>.</p>
+    </li>
+    <li>
+      <h3>It stops in the middle and asks</h3>
+      <p>When the paperwork is ready the agent calls <code>ask_household</code>, which raises a real Strands
+        interrupt: the tool does not return, the event loop suspends inside that call, and the session is saved
+        as it stands. The card is one line of plain language, in Hindi or English, with two answers.</p>
+      <p>Munshi never decides <i>this was a scam</i> on the family's behalf. It is the household's money and the
+        household's word.</p>
+      <p class="src"><code>ToolContext.interrupt()</code>, resumed with an <code>interruptResponse</code>.</p>
+    </li>
+    <li>
+      <h3>The pause is portable</h3>
+      <p>This page is a stateless function. So the whole paused run — inbox, audit log and the suspended Strands
+        session — is gzipped into roughly thirteen kilobytes of text and handed to your browser tab. Answer, and
+        it comes back, the session is rebuilt, and that same tool call finally returns your answer.</p>
+      <p>Nothing is kept on the server. Close the tab and the run is gone. Running on a phone or a home server it
+        is the same code with a directory instead of a string, and the answer can come hours later.</p>
+      <p class="src"><code>munshi/portable.py</code>, <code>munshi/web.py</code>.</p>
+    </li>
+    <li>
+      <h3>It hands off to the people who can actually act</h3>
+      <p>1930 and cybercrime.gov.in for the police report, the bank's own helpline from the bank's own SMS, and
+        UPI Help for the NPCI complaint — each one filled in with the reference number, the payee's UPI id and
+        the exact time, in English because that is what the forms take.</p>
+      <p>Munshi prepares and hands over. It cannot file anything for you, and it does not pretend to be the
+        authority.</p>
+      <p class="src"><code>munshi/complaints.py</code>, and the call and copy buttons on the card itself.</p>
+    </li>
+  </ol>
+  <div class="never">
+    <h3>What it will never do</h3>
+    <ul>
+      <li>Move, hold or refund money — there is no such tool, and the hook refuses anything off the list.</li>
+      <li>Decide on the family's behalf. Every irreversible step waits behind the question.</li>
+      <li>Send the message text anywhere. Only the event's own facts leave the phone.</li>
+      <li>Keep your run. On this site it lives in your tab; on a phone, on your phone.</li>
+    </ul>
   </div>
 </section>
 

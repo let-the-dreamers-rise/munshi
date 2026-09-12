@@ -119,11 +119,27 @@ aside h2 { margin-top: 0; }
 .verdict span { color: var(--muted); font-size: 13px; }
 .hero button.go { padding: 13px 22px; font-weight: 600; font-size: 17px; }
 .hero button.go.primary { background: var(--ink); border-color: var(--ink); color: var(--paper); }
-.steps3 { max-width: 1080px; margin: 0 auto; padding: 30px 20px 60px; display: grid; gap: 18px;
-          grid-template-columns: repeat(3, 1fr); border-top: 1px solid var(--rule); }
-@media (max-width: 720px) { .steps3 { grid-template-columns: 1fr; } }
-.steps3 h3 { font: 600 14px/1.3 var(--sans); letter-spacing: .04em; text-transform: uppercase; color: var(--muted); margin: 0 0 6px; }
-.steps3 p { margin: 0; font-size: 15px; }
+/* The architecture, said plainly, on the page itself. */
+.how { max-width: 1080px; margin: 0 auto; padding: 32px 20px 56px; border-top: 1px solid var(--rule); }
+.how > h2 { font: 500 clamp(24px, 3vw, 32px)/1.2 var(--serif); margin: 0 0 6px; }
+.how > p.lede { font-size: 16px; color: var(--muted); max-width: 62ch; margin: 0 0 26px; }
+.how ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 22px 34px;
+          grid-template-columns: repeat(2, minmax(0, 1fr)); counter-reset: step; }
+@media (max-width: 720px) { .how ol { grid-template-columns: 1fr; } }
+.how li { counter-increment: step; border-top: 2px solid var(--rule); padding-top: 12px; }
+.how li h3 { font: 600 15px/1.3 var(--sans); margin: 0 0 6px; display: flex; gap: 10px; align-items: baseline; }
+.how li h3::before { content: counter(step); font: 600 13px/1 var(--mono); color: var(--urgent);
+                     border: 1px solid var(--urgent); border-radius: 999px; padding: 4px 8px; }
+.how li p { margin: 0 0 8px; font-size: 15px; max-width: 52ch; }
+.how li p.src { color: var(--muted); font-size: 13px; margin-bottom: 0; }
+.how code { font: 13px/1.4 var(--mono); background: var(--card); border: 1px solid var(--rule);
+            border-radius: 5px; padding: 1px 5px; overflow-wrap: anywhere; }
+.how li p.src code { border: 0; background: none; padding: 0; }
+.how .never { margin: 30px 0 0; border-left: 3px solid var(--calm); padding: 4px 0 4px 16px; }
+.how .never h3 { font: 600 13px/1 var(--sans); letter-spacing: .08em; text-transform: uppercase;
+                 color: var(--calm); margin: 0 0 8px; }
+.how .never ul { margin: 0; padding-left: 18px; font-size: 15px; }
+.how .never li { border: 0; padding: 0; margin: 3px 0; counter-increment: none; }
 .paste { max-width: 1080px; margin: 0 auto; padding: 8px 20px 24px; }
 .paste textarea { width: 100%; min-height: 170px; font: 14px/1.5 var(--mono); padding: 12px 14px;
                   background: var(--card); color: var(--ink); border: 1px solid var(--rule); border-radius: 10px; }
