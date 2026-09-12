@@ -38,6 +38,21 @@ def test_nothing_usable_is_a_clear_error():
         messages_from_text("hello how are you", now=NOW)
 
 
+def test_the_clock_follows_the_reader_not_the_server():
+    """A server in UTC must still date the cards in the reader's own wall clock, or the
+    first-hour countdown is hours wrong for everyone who is not on UTC."""
+    ist = handle({"action": "start", "offset_minutes": -330})  # India, UTC+5:30
+    utc = handle({"action": "start", "offset_minutes": 0})
+    scam = lambda out: [c for c in out["state"]["cards"] if c["kind"] == "scam_shaped_payment"][0]
+    apart = datetime.strptime(scam(ist)["when"], "%Y-%m-%d %H:%M") - datetime.strptime(scam(utc)["when"], "%Y-%m-%d %H:%M")
+    assert apart == timedelta(minutes=330)
+
+
+def test_a_silly_offset_is_ignored():
+    out = handle({"action": "start", "offset_minutes": 99999})
+    assert out["state"]["cards"]
+
+
 def test_a_pasted_scam_produces_a_card_with_the_real_reference():
     out = handle({"action": "start", "sms": REAL_PASTE})
     (card,) = [c for c in out["state"]["cards"] if c["kind"] == "scam_shaped_payment"]

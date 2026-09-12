@@ -10,7 +10,7 @@ from __future__ import annotations
 
 import os
 import tempfile
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 from .demo import demo_household
@@ -20,6 +20,7 @@ from .service import Service
 from .witness import Household
 
 MAX_CHOICE = 12
+MAX_OFFSET = 840  # minutes; beyond any real timezone
 
 
 def model_kind():
@@ -27,9 +28,18 @@ def model_kind():
     return os.environ.get("MUNSHI_MODEL", "playbook")
 
 
+def _now(request):
+    """The reader's wall clock. The browser sends its offset, because a server in UTC dating a
+    card three hours in the past would break the one thing the card is about: the first hour."""
+    offset = request.get("offset_minutes")
+    if not isinstance(offset, (int, float)) or isinstance(offset, bool) or abs(offset) > MAX_OFFSET:
+        return datetime.now().replace(second=0, microsecond=0)
+    return (datetime.now(timezone.utc).replace(tzinfo=None) - timedelta(minutes=offset)).replace(second=0, microsecond=0)
+
+
 def _start(request):
     sms = request.get("sms")
-    now = datetime.now().replace(second=0, microsecond=0)
+    now = _now(request)
     if sms:
         household = Household.from_messages("you", messages_from_text(sms, now), now=now)
         if not household.events:

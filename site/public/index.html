@@ -110,6 +110,7 @@
   }
 
   function api(body) {
+    body.offset_minutes = new Date().getTimezoneOffset();  // so the card's clock is the reader's clock
     return M.post("/api/munshi", body).then(function (data) {
       session = data.session;
       return data.state;
