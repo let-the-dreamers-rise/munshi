@@ -16,10 +16,10 @@ from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 
 from nyaya.money.sources import transactions as _parse
-from nyaya.money.witness import SCAM_WORDS
 
 from .ledger import Ledger, Row
 from .payload import check_payload
+from .scams import classify, words_in
 
 SCAM_WINDOW = timedelta(minutes=30)
 DOUBLE_WINDOW = timedelta(minutes=15)
@@ -30,6 +30,7 @@ RECENT = timedelta(days=30)
 DUE_AHEAD_DAYS = 3
 UNUSUAL_MULTIPLE = 5
 UNUSUAL_FLOOR = 2000.0
+MIN_FOR_USUAL = 5  # fewer payments than this and the household has no usual to compare against
 NOT_RENEWABLE = frozenset({"atm", "cash"})  # regular, but there is nothing to cancel
 TIME = "%Y-%m-%d %H:%M"
 
@@ -99,9 +100,8 @@ def _is_person(sender):
 
 
 def scam_words_in(body):
-    low = (body or "").lower()
-    hits = [w for w in SCAM_WORDS if w in low]
-    return [h for h in hits if not any(h != o and h in o for o in hits)]
+    """Munshi's own vocabulary, in this message. See scams.py for the list."""
+    return words_in(body)
 
 
 def _median(values):
@@ -122,7 +122,7 @@ def _scam_context(row, people):
 
 def _payments(rows, messages, now):
     outs = sorted((r for r in rows if r.direction == "out"), key=lambda r: r.when)
-    usual = _median([r.amount for r in outs])
+    usual = _median([r.amount for r in outs]) if len(outs) >= MIN_FOR_USUAL else 0.0
     people = [m for m in messages if _is_person(m.get("sender"))]
     paid_before = set()
     events = []
@@ -136,11 +136,15 @@ def _payments(rows, messages, now):
         hit = _scam_context(r, people)
         if hit:
             m, words = hit
+            pattern = classify(words)
+            evidence = {"minutes_after_message": int((r.when - m["when"]).total_seconds() // 60),
+                        "scam_words": words[:12], "suspect_contact": m["sender"],
+                        "usual_amount": usual, "times_usual": times}
+            if pattern:
+                evidence["scam_pattern"] = pattern.name
             events.append(_event("scam_shaped_payment", r,
                                  ("first_time_payee", "scam_words_within_30m", "from_unknown_number"),
-                                 {"minutes_after_message": int((r.when - m["when"]).total_seconds() // 60),
-                                  "scam_words": words, "suspect_contact": m["sender"],
-                                  "usual_amount": usual, "times_usual": times}))
+                                 evidence))
         elif usual and r.amount >= UNUSUAL_MULTIPLE * usual and r.amount >= UNUSUAL_FLOOR:
             events.append(_event("unusual_payment", r, ("first_time_payee", "unusual_amount"),
                                  {"usual_amount": usual, "times_usual": times}))

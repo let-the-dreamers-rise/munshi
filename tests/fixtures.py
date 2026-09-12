@@ -70,6 +70,18 @@ def atm_every_month():
                 "Avl bal Rs.30,412.10".format(m)) for m in (6, 7, 8)]
 
 
+def digital_arrest_afternoon(minutes_ago=5):
+    """The 2026 version: a fake officer on the phone, then the 'verification' transfer."""
+    paid = NOW - timedelta(minutes=minutes_ago)
+    return [
+        msg(paid - timedelta(minutes=20), "+918800112233",
+            "Mumbai Cyber Cell. A parcel in your name contains narcotics. An FIR is registered and you are "
+            "under DIGITAL ARREST. Do not disconnect the video call. Transfer the amount for verification "
+            "immediately or police will arrest you today."),
+        sent(paid, 85000, "verify.rbi41@okaxis", 777414),
+    ]
+
+
 def phone(*extra):
     rows = everyday()
     for group in extra:

@@ -10,6 +10,7 @@ from __future__ import annotations
 from datetime import timedelta
 
 from .money import quoted, rs, rupees
+from .scams import named
 
 GOLDEN_HOUR = timedelta(hours=1)
 
@@ -32,6 +33,9 @@ def cybercrime_report(event):
     if suspect:
         story = "I received a message from {0} containing {1}. {2} minutes later, {3}".format(
             suspect, _words(event), minutes, story)
+    pattern = named(event.evidence)
+    if pattern:
+        story += " The message follows {0}.".format(pattern.en)
     fields = {
         "Category": "Online Financial Fraud",
         "Sub-category": "UPI related fraud" if event.channel == "upi" or "@" in event.party else "Other financial fraud",

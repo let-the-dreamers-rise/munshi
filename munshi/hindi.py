@@ -13,6 +13,7 @@ from __future__ import annotations
 from datetime import date
 
 from .money import rupees
+from .scams import named
 
 RS = "₹"  # the rupee sign; "Rs" in the English card
 MONTHS = ("जनवरी", "फरवरी", "मार्च",
@@ -44,9 +45,8 @@ def quoted(words):
 def headline(event):
     ev = event.evidence
     if event.kind == "scam_shaped_payment":
-        scam = ("यह KYC ठगी का तरीका है।"
-                if "kyc" in ev.get("scam_words", []) else
-                "यह ठगी जैसा लगता है।")
+        pattern = named(ev)
+        scam = pattern.hi_line if pattern else "यह ठगी जैसा लगता है।"
         return ("{0} {1} को गए, जिन्हें आपने "
                 "पहले कभी पैसे नहीं "
                 "भेजे — किसी अनजान "

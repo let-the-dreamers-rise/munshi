@@ -10,7 +10,7 @@ from __future__ import annotations
 import re
 from datetime import date, datetime
 
-from nyaya.money.witness import SCAM_WORDS
+from .scams import BY_NAME, VOCABULARY
 
 TIME = "%Y-%m-%d %H:%M"
 KINDS = frozenset({"scam_shaped_payment", "unusual_payment", "double_charge", "renewal_due"})
@@ -77,8 +77,14 @@ def check_row(d, i=0):
 
 
 def _words(where, field, value):
-    if not isinstance(value, list) or len(value) > 12 or not all(w in SCAM_WORDS for w in value):
+    if not isinstance(value, list) or len(value) > 12 or not all(w in VOCABULARY for w in value):
         _fail(where, field, "must be words from Munshi's own scam list")
+    return value
+
+
+def _pattern(where, field, value):
+    if value not in BY_NAME:
+        _fail(where, field, "is not one of Munshi's scam patterns")
     return value
 
 
@@ -89,6 +95,7 @@ def _maybe_number(where, field, value):
 EVIDENCE = {
     "minutes_after_message": lambda w, f, v: _number(w, f, v, hi=60, whole=True),
     "scam_words": _words,
+    "scam_pattern": _pattern,
     "suspect_contact": lambda w, f, v: _text(w, f, v, _PHONE, "must be a phone number"),
     "usual_amount": lambda w, f, v: _number(w, f, v),
     "times_usual": _maybe_number,

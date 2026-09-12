@@ -34,7 +34,8 @@ def test_the_story_on_the_police_report_reads_as_one_person_speaking():
     event, _ = only(scam_afternoon())
     story = cybercrime_report(event)["fields"]["What happened"]
     assert "Rs 12,000 left my HDFC Bank account" in story
-    assert "'kyc', 'blocked' and 'immediately'" in story or "'kyc' and 'blocked'" in story
+    assert "'account will be blocked', 'immediately' and 'kyc'" in story
+    assert story.endswith("The message follows the KYC scam.")
     assert "rs 12" not in story
 
 

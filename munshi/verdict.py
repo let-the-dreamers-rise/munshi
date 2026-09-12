@@ -17,6 +17,7 @@ from pydantic import BaseModel, Field
 
 from .money import day, in_days, quoted, rs, rupees, times
 from .policy import INVESTIGATOR, PolicyHook
+from .scams import named
 
 
 class Verdict(BaseModel):
@@ -77,7 +78,8 @@ def facts_for(event, ledger):
 def rule_verdict(event):
     ev = event.evidence
     if event.kind == "scam_shaped_payment":
-        scam = "This is how the KYC scam works." if "kyc" in ev.get("scam_words", []) else "This is the shape of a scam."
+        pattern = named(ev)
+        scam = pattern.en_line if pattern else "This is the shape of a scam."
         return Verdict(kind="likely_scam", confidence=0.9, recommended="report_now", headline=(
             "{0} went to {1}, someone you have never paid, {2} minutes after a threat from an unknown number. {3}").format(
             rs(event.amount), event.party, ev.get("minutes_after_message"), scam))

@@ -25,7 +25,8 @@ def test_scam_shaped_payment_is_an_event_with_the_fields_a_report_needs():
     assert "first_time_payee" in e.flags and "scam_words_within_30m" in e.flags
     assert e.evidence["minutes_after_message"] == 9
     assert e.evidence["suspect_contact"] == "+919811234567"
-    assert set(e.evidence["scam_words"]) >= {"kyc", "blocked"}
+    assert set(e.evidence["scam_words"]) >= {"kyc", "account will be blocked"}  # the longer phrase wins
+    assert e.evidence["scam_pattern"] == "kyc"
 
 
 def test_quiet_phone_raises_nothing():

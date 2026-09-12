@@ -244,11 +244,13 @@ entrypoint and the tests.
 
 ```
 munshi/witness.py     messages -> ledger rows and events (on the phone)
+munshi/scams.py       the scam vocabulary, grouped into the scripts it names
 munshi/payload.py     the shape of everything that crosses to the agent
 munshi/ledger.py      the ledger the agent may query
 munshi/complaints.py  1930 / portal, bank dispute, UPI Help drafts
 munshi/policy.py      PolicyHook, AuditHook, the allow-list
 munshi/verdict.py     the investigator sub-agent and its rules fallback
+munshi/hindi.py       the same card, written again in Hindi
 munshi/agent.py       the orchestrator's tools and system prompt
 munshi/runner.py      one session per event, interrupt -> card -> resume
 munshi/playbook.py    a no-weights model for offline runs

@@ -48,7 +48,8 @@
   <textarea id="sms" spellcheck="false" placeholder="Paste the messages, oldest first, with a blank line between them."></textarea>
   <div class="bar">
     <button class="primary" id="read" type="button">Read these messages</button>
-    <button id="example" type="button">Use an example</button>
+    <button id="example" type="button">Example: KYC threat</button>
+    <button id="example2" type="button">Example: digital arrest</button>
     <span class="error" id="paste-error" role="alert"></span>
   </div>
   <p class="hint">Paste the real SMS from your bank, with a blank line between messages, oldest first. Nothing is
@@ -89,6 +90,8 @@
         bank's helpline — and rules decide what deserves a household's attention. Money to a payee never paid
         before, minutes after a threatening message. A subscription about to renew. The same merchant charging
         twice.</p>
+      <p>It also names the script the message follows — digital arrest, KYC, electricity disconnection, courier
+        and customs, task-and-job, screen sharing — which is the first thing 1930 asks for.</p>
       <p>If the rules see nothing, no agent runs and nothing leaves the phone. The message text itself never
         travels — only the facts of the one event.</p>
       <p class="src"><code>munshi/witness.py</code>, on top of the MIT-licensed <code>nyaya.money</code> parser.</p>
@@ -165,6 +168,14 @@
     "Sent Rs.12000.00 From HDFC Bank A/C *4521 To kyc.update9@ybl On 12/09/26 Ref 624511873920",
     "Not You? Call 18002586161/SMS BLOCK UPI to 7308080808"
   ].join("\n");
+  var EXAMPLE2 = [
+    "from: +918800112233",
+    "Mumbai Cyber Cell. A parcel in your name contains narcotics. An FIR is registered and you are under",
+    "DIGITAL ARREST. Do not disconnect the video call. Transfer the amount for verification immediately.",
+    "",
+    "Sent Rs.85000.00 From HDFC Bank A/C *4521 To verify.rbi41@okaxis On 12/09/26 Ref 624511874414",
+    "Not You? Call 18002586161/SMS BLOCK UPI to 7308080808"
+  ].join("\n");
 
   function show(which) {
     M.byId("paste").hidden = which !== "paste";
@@ -221,6 +232,7 @@
   });
   M.byId("mine").addEventListener("click", function () { show("paste"); M.byId("sms").focus(); });
   M.byId("example").addEventListener("click", function () { M.byId("sms").value = EXAMPLE; });
+  M.byId("example2").addEventListener("click", function () { M.byId("sms").value = EXAMPLE2; });
   M.byId("read").addEventListener("click", function () {
     var text = M.byId("sms").value.trim();
     if (!text) { M.byId("sms").focus(); return; }
