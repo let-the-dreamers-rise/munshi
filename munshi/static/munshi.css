@@ -49,7 +49,12 @@ details { margin-top: 16px; border-top: 1px solid var(--rule); padding-top: 12px
 summary { cursor: pointer; font-weight: 600; }
 .tabs { display: flex; gap: 6px; margin: 12px 0 10px; flex-wrap: wrap; }
 .tabs button { padding: 6px 12px; font-size: 14px; }
-.tabs button[aria-selected="true"] { border-color: var(--ink); font-weight: 600; }
+.tabs button[aria-pressed="true"] { border-color: var(--ink); font-weight: 600; }
+a.btn { font: inherit; border-radius: 8px; padding: 10px 16px; border: 1px solid var(--rule); background: var(--card);
+        color: var(--ink); text-decoration: none; display: inline-block; }
+a.btn.primary { background: var(--urgent); border-color: var(--urgent); color: var(--on-strong); font-weight: 600; }
+a.btn:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+.card.urgent .choices + ol.steps { margin-top: 14px; }
 .draft { background: var(--paper); border-radius: 8px; padding: 12px 14px; font-size: 14px; }
 .draft p { margin: 0 0 10px; }
 .draft dl { display: grid; grid-template-columns: max-content 1fr; gap: 4px 14px; margin: 0; }

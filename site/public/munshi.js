@@ -71,7 +71,7 @@
         return d[k] ? acc.concat([el("dt", { text: k.replace("_", " ") }), el("dd", { text: String(d[k]) })]) : acc;
       }, [])));
     }
-    var box = el("div", { cls: "draft", role: "tabpanel" }, kids);
+    var box = el("div", { cls: "draft" }, kids);
     var copy = el("button", { cls: "copy", type: "button", text: "Copy" });
     copy.addEventListener("click", function () {
       var text = box.innerText.replace(/\nCopy$/, "");
@@ -86,13 +86,13 @@
     var names = Object.keys(card.drafts || {});
     if (!names.length) return null;
     var panel = el("div");
-    var tabs = el("div", { cls: "tabs", role: "tablist" });
+    var tabs = el("div", { cls: "tabs" });
     function show(i) {
-      Array.prototype.forEach.call(tabs.children, function (b, j) { b.setAttribute("aria-selected", String(i === j)); });
+      Array.prototype.forEach.call(tabs.children, function (b, j) { b.setAttribute("aria-pressed", String(i === j)); });
       panel.replaceChildren(draftView(names[i], card.drafts[names[i]]));
     }
-    names.forEach(function (n, i) {
-      tabs.appendChild(el("button", { type: "button", role: "tab", text: TAB_NAMES[n] || n,
+    names.forEach(function (n, i) {  // plain buttons: aria-pressed, not tabs we do not key-handle
+      tabs.appendChild(el("button", { type: "button", text: TAB_NAMES[n] || n,
                                       onclick: function () { show(i); } }));
     });
     show(0);
@@ -118,6 +118,39 @@
 
   function reported(card) { return URGENT[card.kind] && card.decision === "report"; }
 
+  function everything(card) {
+    var lines = [card.headline, ""];
+    var report = (card.drafts || {}).cybercrime_report;
+    var bank = (card.drafts || {}).bank_dispute;
+    if (report) {
+      Object.keys(report.fields).forEach(function (k) {
+        if (report.fields[k]) lines.push(k + ": " + report.fields[k]);
+      });
+    }
+    if (bank) lines.push("", bank.subject, "", bank.body);
+    return lines.join("\n");
+  }
+
+  function dial(label, number, primary) {
+    return el("a", { cls: "btn" + (primary ? " primary" : ""), href: "tel:" + number, text: label });
+  }
+
+  // In the first hour, the useful thing is a phone call, not more reading.
+  function actions(card) {
+    var bank = (card.drafts || {}).bank_dispute || {};
+    var copy = el("button", { type: "button", text: "Copy everything" });
+    copy.addEventListener("click", function () {
+      (navigator.clipboard ? navigator.clipboard.writeText(everything(card)) : Promise.reject()).then(
+        function () { copy.textContent = "Copied — paste it into cybercrime.gov.in"; },
+        function () { copy.textContent = "Copy from the paperwork below"; });
+    });
+    return el("div", { cls: "choices" }, [
+      dial("Call 1930", "1930", true),
+      bank.helpline ? dial("Call " + (bank.bank || "your bank"), bank.helpline) : null,
+      copy
+    ]);
+  }
+
   function doneCard(card) {
     var chosen = card.options.filter(function (o) { return o[0] === card.decision; })[0];
     var act = reported(card);
@@ -125,6 +158,7 @@
       el("div", { cls: "kicker", text: act ? "Your next steps" : "You chose: " + (chosen ? chosen[1] : card.decision) }),
       el("h3", { cls: "headline", text: card.headline }),
       act ? clock(card) : null,
+      act ? actions(card) : null,
       el("ol", { cls: "steps" }, card.outcome.split("\n").filter(Boolean).map(function (s) { return el("li", { text: s }); })),
       drafts(card)
     ]);
@@ -220,12 +254,13 @@
 
   window.Munshi = {
     el: el, byId: byId, post: post, render: render, busy: busy, fail: fail, parseWhen: parseWhen,
+    // Rejects if the run fails, so the caller decides where the reason belongs.
     mount: function (a) {
       adapter = a;
       shown = 0;
       var log = byId("log");
       if (log) log.replaceChildren();
-      return Promise.resolve(adapter.start()).then(render, fail);
+      return Promise.resolve(adapter.start()).then(render);
     }
   };
 })();

@@ -49,6 +49,7 @@
   <div class="bar">
     <button class="primary" id="read" type="button">Read these messages</button>
     <button id="example" type="button">Use an example</button>
+    <span class="error" id="paste-error" role="alert"></span>
   </div>
   <p class="hint">Paste the real SMS from your bank, with a blank line between messages, oldest first. Nothing is
     stored: the text is read once, in memory, and never written down. You can add <code>from: +9198…</code> or
@@ -151,12 +152,19 @@
 
   function run(sms) {
     adapter.sms = sms || null;
+    M.byId("paste-error").textContent = "";
     show("app");
     working(true, sms ? "Munshi is reading your messages…" : "Munshi is watching Meera's phone…");
     M.mount(adapter).then(function () { working(false); }, function (e) {
       working(false);
-      if (sms) { show("paste"); }
-      M.fail(e);
+      M.busy(false);
+      if (sms) {  // back to the box, with the reason where they can see it
+        show("paste");
+        M.byId("paste-error").textContent = (e && e.message) || String(e);
+        M.byId("sms").focus();
+      } else {
+        M.fail(e);
+      }
     });
   }
 

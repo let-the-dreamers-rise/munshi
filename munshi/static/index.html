@@ -70,7 +70,7 @@
     M.busy(true);
     Promise.resolve((adapter.restart || adapter.start)()).then(function (s) { M.busy(false); M.render(s); }, M.fail);
   });
-  M.mount(adapter);
+  M.mount(adapter).catch(M.fail);
 })();
 </script>
 </body>
