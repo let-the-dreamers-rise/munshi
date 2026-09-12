@@ -181,6 +181,10 @@
     run(text);
   });
   M.byId("restart").addEventListener("click", function () { session = null; run(adapter.sms); });
+
+  // Deep links, so a link can open straight to the card: ?demo runs Meera's afternoon, ?paste opens the box.
+  if (/[?&]demo\b/.test(location.search)) { run(null); }
+  else if (/[?&]paste\b/.test(location.search)) { show("paste"); }
 })();
 </script>
 </body>
