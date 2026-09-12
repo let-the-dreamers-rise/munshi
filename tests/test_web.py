@@ -1,7 +1,7 @@
 """The hosted demo: no install, no server-side state, and it works on a real pasted SMS."""
 
 import json
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 import pytest
 
@@ -46,6 +46,15 @@ def test_the_clock_follows_the_reader_not_the_server():
     scam = lambda out: [c for c in out["state"]["cards"] if c["kind"] == "scam_shaped_payment"][0]
     apart = datetime.strptime(scam(ist)["when"], "%Y-%m-%d %H:%M") - datetime.strptime(scam(utc)["when"], "%Y-%m-%d %H:%M")
     assert apart == timedelta(minutes=330)
+
+
+def test_the_audit_log_is_stamped_in_the_reader_s_clock_too():
+    out = handle({"action": "start", "offset_minutes": -330})
+    rows = out["state"]["audit"]
+    assert rows
+    server = datetime.now(timezone.utc).replace(tzinfo=None)
+    stamped = datetime.fromisoformat(rows[0]["at"])
+    assert timedelta(minutes=320) < stamped - server < timedelta(minutes=340)
 
 
 def test_a_silly_offset_is_ignored():

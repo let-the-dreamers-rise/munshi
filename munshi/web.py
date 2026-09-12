@@ -37,6 +37,21 @@ def _now(request):
     return (datetime.now(timezone.utc).replace(tzinfo=None) - timedelta(minutes=offset)).replace(second=0, microsecond=0)
 
 
+def _in_readers_clock(state, request):
+    """The audit log is stamped by the server's clock; show it in the same clock as the cards."""
+    shift = _now(request) - datetime.now().replace(second=0, microsecond=0)
+    if abs(shift) < timedelta(minutes=1):
+        return state
+    rows = []
+    for row in state.get("audit", ()):
+        try:
+            at = (datetime.fromisoformat(row["at"]) + shift).isoformat(timespec="seconds")
+        except (KeyError, TypeError, ValueError):
+            at = row.get("at")
+        rows.append({**row, "at": at})
+    return {**state, "audit": rows}
+
+
 def _start(request):
     sms = request.get("sms")
     now = _now(request)
@@ -50,7 +65,7 @@ def _start(request):
         home = Path(tmp) / "home"
         service = Service(home, household=household, model_kind=model_kind())
         service.scan()
-        return {"state": service.state(), "session": dump_home(home)}
+        return {"state": _in_readers_clock(service.state(), request), "session": dump_home(home)}
 
 
 def _decide(request):
@@ -61,7 +76,7 @@ def _decide(request):
         home = load_home(request.get("session"), Path(tmp) / "home")
         service = Service(home, model_kind=model_kind())
         service.decide(str(request.get("card", "")), choice)
-        return {"state": service.state(), "session": dump_home(home)}
+        return {"state": _in_readers_clock(service.state(), request), "session": dump_home(home)}
 
 
 def handle(request):
