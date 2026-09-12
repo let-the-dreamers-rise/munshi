@@ -135,6 +135,12 @@ python -m munshi.run serve --model playbook
 
 Open http://127.0.0.1:8765. *Replay the afternoon* starts again with the scam five minutes old.
 
+To check this machine is ready for Bedrock (credentials, region, model access) and see exactly what is missing:
+
+```bash
+python scripts/aws_check.py
+```
+
 With Amazon Bedrock (default model `us.amazon.nova-pro-v1:0`, override with `MUNSHI_BEDROCK_MODEL`; region from
 `AWS_REGION`). Credentials from `aws login` work because `botocore[crt]` is a dependency. To put an Amazon Bedrock
 Guardrail on everything the model reads and writes, set `MUNSHI_GUARDRAIL_ID` (and `MUNSHI_GUARDRAIL_VERSION`,

@@ -99,7 +99,10 @@
     Built on <a href="https://strandsagents.com">Strands Agents</a> for the AWS Agents for Humans hackathon.
     Not affiliated with NPCI, the Indian Cyber Crime Coordination Centre or any bank. Munshi prepares complaints;
     it cannot file them for you, and it never moves money.</p>
-  <p id="engine"></p>
+  <p id="engine">This demo runs the agent with Munshi's <b>playbook</b> model, which follows the system prompt with
+    no weights, so anyone can run the real loop — the Strands event loop, the policy and audit hooks, the interrupt
+    and the resumed session — without an AWS account. With credentials it runs on Amazon Bedrock instead; nothing
+    else changes.</p>
 </footer>
 
 <script src="munshi.js"></script>
