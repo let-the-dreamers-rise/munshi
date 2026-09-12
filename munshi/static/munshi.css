@@ -20,6 +20,8 @@ header { grid-column: 1 / -1; display: flex; flex-wrap: wrap; align-items: basel
          border-bottom: 1px solid var(--rule); padding-bottom: 14px; }
 .mark { font: 600 22px/1 var(--serif); letter-spacing: .02em; }
 .who { color: var(--muted); }
+button.lang { margin-left: auto; font-size: 13px; padding: 4px 12px; border-radius: 999px; }
+button.lang + .pill { margin-left: 0; }
 .pill { margin-left: auto; font-size: 13px; border: 1px solid var(--calm); color: var(--calm);
         border-radius: 999px; padding: 3px 10px; white-space: nowrap; }
 h2.section { font: 600 13px/1 var(--sans); letter-spacing: .08em; text-transform: uppercase; color: var(--muted);

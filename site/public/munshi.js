@@ -3,8 +3,80 @@
 (function () {
   "use strict";
   var URGENT = { scam_shaped_payment: 1, unusual_payment: 1 };
+  var WORDS = {
+    en: {
+      now: "Now", later: "When you have a minute", handled: "Handled", needs: "Needs you now",
+      worth: "Worth a look", double_charge: "Charged twice", renewal_due: "Renews soon",
+      quiet: "Nothing needs you. Munshi is watching quietly.",
+      paperwork: "The paperwork, already filled in", steps: "Your next steps", chose: "You chose: ",
+      copy: "Copy", copied: "Copied", copyAll: "Copy everything",
+      copiedAll: "Copied — paste it into cybercrime.gov.in", selectText: "Select the text to copy",
+      call1930: "Call 1930", callBank: function (b) { return "Call " + b; },
+      onIt: "Munshi is on it…", other: "हिन्दी",
+      left: "left in the first hour, while the bank can still hold the money.",
+      spoken: function (m) { return "About " + m + " minute" + (m === 1 ? "" : "s") + " left in the first hour."; },
+      over: "The first hour has passed. Report anyway: 1930 and the bank still act on it.",
+      yours: function (n) { return "Your messages: " + n + " read, nothing kept."; },
+      watching: function (who, n, days) {
+        return who + "'s household. Watching " + n + (days >= 2 ? " over " + days + " days" : "") + ", on the phone.";
+      },
+      payments: function (n) { return n + " payment" + (n === 1 ? "" : "s"); }
+    },
+    hi: {
+      now: "अभी", later: "जब समय मिले",
+      handled: "हो गया",
+      needs: "अभी आपकी ज़रूरत है",
+      worth: "देखने लायक",
+      double_charge: "दो बार कटे",
+      renewal_due: "जल्द रिन्यू होगा",
+      quiet: "अभी कुछ ज़रूरी नहीं है। "
+             + "मुंशी चुपचाप देख रहा है।",
+      paperwork: "कागज़ी कार्रवाई, पहले "
+                 + "से भरी हुई",
+      steps: "आगे क्या करना है",
+      chose: "आपने चुना: ",
+      copy: "कॉपी करें", copied: "कॉपी हो गया",
+      copyAll: "सब कुछ कॉपी करें",
+      copiedAll: "कॉपी हो गया — cybercrime.gov.in पर "
+                 + "पेस्ट करें",
+      selectText: "कॉपी करने के लिए टेक्स्ट "
+                  + "चुनें",
+      call1930: "1930 पर कॉल करें",
+      callBank: function (b) { return b + " को कॉल करें"; },
+      onIt: "मुंशी कर रहा है…", other: "English",
+      left: "पहले घंटे में इतना समय "
+            + "बचा है, जब तक बैंक पैसे "
+            + "रोक सकता है।",
+      spoken: function (m) {
+        return "पहले घंटे में लगभग " + m +
+          " मिनट बचे हैं।";
+      },
+      over: "पहला घंटा बीत चुका है। "
+            + "फिर भी रिपोर्ट करें: 1930 "
+            + "और बैंक अब भी कार्रवाई "
+            + "करते हैं।",
+      yours: function (n) {
+        return "आपके मैसेज: " + n +
+          " पढ़े गए, कुछ सहेजा नहीं।";
+      },
+      watching: function (who, n, days) {
+        return who + " का घर। " + n +
+          (days >= 2 ? ", " + days + " दिन के" : "") +
+          " फोन पर देखे जा रहे हैं।";
+      },
+      payments: function (n) { return n + " भुगतान"; }
+    }
+  };
+  var lang = "en", latest = null;
+
+  function t() { return WORDS[lang]; }
+
+  // The Hindi card is written from the same facts by munshi/hindi.py, not translated here.
+  function say(card, key, fallback) {
+    var hi = card.hi || {};
+    return lang === "hi" && hi[key] ? hi[key] : fallback;
+  }
   var TAB_NAMES = { cybercrime_report: "1930 and cybercrime.gov.in", bank_dispute: "Your bank", upi_help: "UPI Help" };
-  var KINDS = { double_charge: "Charged twice", renewal_due: "Renews soon" };
   var timers = [], adapter = null, shown = 0;
 
   function el(tag, attrs, kids) {
@@ -40,13 +112,12 @@
       var mins = Math.max(0, Math.ceil(left / 60));
       if (left > 0) {
         big.textContent = Math.floor(left / 60) + ":" + String(left % 60).padStart(2, "0");
-        words.textContent = "left in the first hour, while the bank can still hold the money.";
-        if (mins !== said) spoken.textContent = "About " + mins + " minute" + (mins === 1 ? "" : "s") +
-          " left in the first hour, while the bank can still hold the money.";
+        words.textContent = t().left;
+        if (mins !== said) spoken.textContent = t().spoken(mins);
       } else {
         big.textContent = "0:00";
-        words.textContent = "The first hour has passed. Report anyway: 1930 and the bank still act on it.";
-        if (said !== 0) spoken.textContent = "The first hour has passed. Report anyway: 1930 and the bank still act on it.";
+        words.textContent = t().over;
+        if (said !== 0) spoken.textContent = t().over;
       }
       said = left > 0 ? mins : 0;
     }
@@ -72,11 +143,11 @@
       }, [])));
     }
     var box = el("div", { cls: "draft" }, kids);
-    var copy = el("button", { cls: "copy", type: "button", text: "Copy" });
+    var copy = el("button", { cls: "copy", type: "button", text: t().copy });
     copy.addEventListener("click", function () {
-      var text = box.innerText.replace(/\nCopy$/, "");
+      var text = box.innerText.replace(new RegExp("\\n" + t().copy + "$"), "");
       (navigator.clipboard ? navigator.clipboard.writeText(text) : Promise.reject()).then(
-        function () { copy.textContent = "Copied"; }, function () { copy.textContent = "Select the text to copy"; });
+        function () { copy.textContent = t().copied; }, function () { copy.textContent = t().selectText; });
     });
     box.appendChild(copy);
     return box;
@@ -97,20 +168,21 @@
     });
     show(0);
     return el("details", URGENT[card.kind] ? { open: "" } : {},
-              [el("summary", { text: "The paperwork, already filled in" }), tabs, panel]);
+              [el("summary", { text: t().paperwork }), tabs, panel]);
   }
 
   function pendingCard(card) {
     var urgent = !!URGENT[card.kind];
-    var buttons = card.options.map(function (o, i) {
+    var options = say(card, "options", card.options);
+    var buttons = options.map(function (o, i) {
       return el("button", { type: "button", cls: i === 0 ? "primary" : "", text: o[1],
                             onclick: function (e) { decide(card, o[0], e.currentTarget); } });
     });
     return el("article", { cls: "card " + (urgent ? "urgent" : "quiet") }, [
-      el("div", { cls: "kicker", text: urgent ? "Needs you now" : (KINDS[card.kind] || "Worth a look") }),
-      el("h3", { cls: "headline", text: card.headline }),
+      el("div", { cls: "kicker", text: urgent ? t().needs : (t()[card.kind] || t().worth) }),
+      el("h3", { cls: "headline", text: say(card, "headline", card.headline) }),
       urgent ? clock(card) : null,
-      el("ul", { cls: "facts" }, card.evidence.map(function (f) { return el("li", { text: f }); })),
+      el("ul", { cls: "facts" }, say(card, "evidence", card.evidence).map(function (f) { return el("li", { text: f }); })),
       el("div", { cls: "choices" }, buttons),
       drafts(card)
     ]);
@@ -138,40 +210,37 @@
   // In the first hour, the useful thing is a phone call, not more reading.
   function actions(card) {
     var bank = (card.drafts || {}).bank_dispute || {};
-    var copy = el("button", { type: "button", text: "Copy everything" });
+    var copy = el("button", { type: "button", text: t().copyAll });
     copy.addEventListener("click", function () {
       (navigator.clipboard ? navigator.clipboard.writeText(everything(card)) : Promise.reject()).then(
-        function () { copy.textContent = "Copied — paste it into cybercrime.gov.in"; },
-        function () { copy.textContent = "Copy from the paperwork below"; });
+        function () { copy.textContent = t().copiedAll; },
+        function () { copy.textContent = t().selectText; });
     });
     return el("div", { cls: "choices" }, [
-      dial("Call 1930", "1930", true),
-      bank.helpline ? dial("Call " + (bank.bank || "your bank"), bank.helpline) : null,
+      dial(t().call1930, "1930", true),
+      bank.helpline ? dial(t().callBank(bank.bank || "bank"), bank.helpline) : null,
       copy
     ]);
   }
 
   function doneCard(card) {
-    var chosen = card.options.filter(function (o) { return o[0] === card.decision; })[0];
+    var chosen = say(card, "options", card.options).filter(function (o) { return o[0] === card.decision; })[0];
     var act = reported(card);
     return el("article", { cls: "card " + (act ? "urgent" : "done") }, [
-      el("div", { cls: "kicker", text: act ? "Your next steps" : "You chose: " + (chosen ? chosen[1] : card.decision) }),
-      el("h3", { cls: "headline", text: card.headline }),
+      el("div", { cls: "kicker", text: act ? t().steps : t().chose + (chosen ? chosen[1] : card.decision) }),
+      el("h3", { cls: "headline", text: say(card, "headline", card.headline) }),
       act ? clock(card) : null,
       act ? actions(card) : null,
-      el("ol", { cls: "steps" }, card.outcome.split("\n").filter(Boolean).map(function (s) { return el("li", { text: s }); })),
+      el("ol", { cls: "steps" }, say(card, "outcome", card.outcome).split("\n").filter(Boolean)
+        .map(function (s) { return el("li", { text: s }); })),
       drafts(card)
     ]);
   }
 
-  function plural(n, one) { return n + " " + one + (n === 1 ? "" : "s"); }
-
   function watching(s) {
-    var payments = plural(s.watched.payments, "payment");
-    if (s.household === "you") return "Your messages: " + payments + " read, nothing kept.";
-    var name = s.household.charAt(0).toUpperCase() + s.household.slice(1);
-    return name + "'s household. Watching " + payments +
-      (s.watched.days >= 2 ? " over " + s.watched.days + " days" : "") + ", on the phone.";
+    var payments = t().payments(s.watched.payments);
+    if (s.household === "you") return t().yours(payments);
+    return t().watching(s.household.charAt(0).toUpperCase() + s.household.slice(1), payments, s.watched.days);
   }
 
   function section(title, cards, make, empty) {
@@ -182,7 +251,8 @@
   }
 
   function render(s) {
-    timers.forEach(function (t) { clearInterval(t); clearTimeout(t); });
+    latest = s;
+    timers.forEach(function (id) { clearInterval(id); clearTimeout(id); });
     timers = [];
     var who = byId("who");
     if (who) who.textContent = watching(s);
@@ -192,11 +262,11 @@
     var done = s.cards.filter(function (c) { return c.status !== "pending"; }).reverse();
     var main = byId("main");
     main.replaceChildren.apply(main, [
-      section("Now", now.concat(done.filter(reported)),
+      section(t().now, now.concat(done.filter(reported)),
               function (c) { return c.status === "pending" ? pendingCard(c) : doneCard(c); },
-              later.length || done.length ? null : "Nothing needs you. Munshi is watching quietly."),
-      section("When you have a minute", later, pendingCard),
-      section("Handled", done.filter(function (c) { return !reported(c); }), doneCard)
+              later.length || done.length ? null : t().quiet),
+      section(t().later, later, pendingCard),
+      section(t().handled, done.filter(function (c) { return !reported(c); }), doneCard)
     ].filter(Boolean));
     renderLog(s.audit || []);
   }
@@ -241,7 +311,7 @@
     var box = byId("error");
     if (box) box.textContent = "";
     busy(true);
-    button.textContent = "Munshi is on it…";
+    button.textContent = t().onIt;
     Promise.resolve(adapter.decide(card, choice)).then(function (s) { busy(false); render(s); }, fail);
   }
 
@@ -252,8 +322,29 @@
       .then(function (j) { if (!j.ok) throw new Error(j.error); return j.data; });
   }
 
+  function stored(key) {
+    try { return window.localStorage.getItem(key); } catch (e) { return null; }
+  }
+
+  function setLang(next) {
+    lang = WORDS[next] ? next : "en";
+    try { window.localStorage.setItem("munshi-lang", lang); } catch (e) { /* private window */ }
+    document.documentElement.lang = lang;
+    var button = byId("lang");
+    if (button) button.textContent = t().other;
+    if (latest) { shown = 0; var log = byId("log"); if (log) log.replaceChildren(); render(latest); }
+  }
+
+  function startLang() {
+    var saved = stored("munshi-lang");
+    setLang(saved || (/^hi\b/i.test(navigator.language || "") ? "hi" : "en"));
+    var button = byId("lang");
+    if (button) button.addEventListener("click", function () { setLang(lang === "hi" ? "en" : "hi"); });
+  }
+
   window.Munshi = {
     el: el, byId: byId, post: post, render: render, busy: busy, fail: fail, parseWhen: parseWhen,
+    setLang: setLang, lang: function () { return lang; },
     // Rejects if the run fails, so the caller decides where the reason belongs.
     mount: function (a) {
       adapter = a;
@@ -261,6 +352,7 @@
       var log = byId("log");
       if (log) log.replaceChildren();
       return Promise.resolve(adapter.start()).then(render);
-    }
+    },
+    ready: startLang
   };
 })();

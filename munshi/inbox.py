@@ -31,6 +31,7 @@ class Card:
     amount: float
     when: str
     drafts: dict = field(default_factory=dict)
+    hi: dict = field(default_factory=dict)  # the same card in Hindi, written from the same facts
     interrupt_id: str = ""
     session_id: str = ""
     decided_by: str = "rules"
@@ -97,9 +98,11 @@ class Inbox:
             self._save([c for c in self._load() if c.id != stamped.id] + [stamped])
         return stamped
 
-    def decide(self, cid, decision, outcome):
+    def decide(self, cid, decision, outcome, outcome_hi=""):
         with locked(self.path):
-            done = replace(self.get(cid), status="decided", decision=decision, outcome=outcome,
+            card = self.get(cid)
+            done = replace(card, status="decided", decision=decision, outcome=outcome,
+                           hi={**card.hi, "outcome": outcome_hi},
                            decided=datetime.now().isoformat(timespec="seconds"))
             self._save([done if c.id == cid else c for c in self._load()])
         return done

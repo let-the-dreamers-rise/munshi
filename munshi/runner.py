@@ -16,6 +16,7 @@ from pathlib import Path
 
 from strands.session.file_session_manager import FileSessionManager
 
+from . import hindi
 from .agent import DECISION, build_agent, card_reason, next_steps
 from .complaints import drafts_for
 from .filelock import locked
@@ -42,6 +43,7 @@ def card_from(reason, interrupt_id="", session_id=""):
                 headline=reason["headline"], evidence=tuple(reason["evidence"]),
                 options=tuple(tuple(o) for o in reason["options"]), party=reason["party"],
                 amount=reason["amount"], when=reason["when"], drafts=dict(reason.get("drafts", {})),
+                hi=dict(reason.get("hi", {})),
                 interrupt_id=interrupt_id, session_id=session_id, decided_by=reason.get("decided_by", "rules"))
 
 
@@ -130,7 +132,7 @@ class Runner:
             steps = next_steps(event, choice)
             repeats = not said or any(step in said for step in steps)
             outcome = "\n".join(steps + ([] if repeats else [said]))
-            return self.inbox.decide(cid, choice, outcome)
+            return self.inbox.decide(cid, choice, outcome, "\n".join(hindi.steps(event, choice)))
 
     def _resume(self, card, choice):
         agent = self._agent(card.session_id)

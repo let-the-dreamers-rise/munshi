@@ -61,6 +61,7 @@
   <header>
     <span class="mark">Munshi</span>
     <span class="who" id="who"></span>
+    <button class="lang" id="lang" type="button" lang="hi">हिन्दी</button>
     <span class="pill" title="No tool can move money, and a hook refuses any call outside the allow-list">Never moves money</span>
   </header>
   <main id="main" aria-live="polite"></main>
@@ -180,6 +181,7 @@
     if (!text) { M.byId("sms").focus(); return; }
     run(text);
   });
+  M.ready();
   M.byId("restart").addEventListener("click", function () { session = null; run(adapter.sms); });
 
   // Deep links, so a link can open straight to the card: ?demo runs Meera's afternoon, ?paste opens the box.

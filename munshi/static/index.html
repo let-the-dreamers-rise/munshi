@@ -11,6 +11,7 @@
   <header>
     <span class="mark">Munshi</span>
     <span class="who" id="who">Loading…</span>
+    <button class="lang" id="lang" type="button" lang="hi">हिन्दी</button>
     <span class="pill" title="No tool can move money, and a hook refuses any call outside the allow-list">Never moves money</span>
     <p class="replay" id="replay" hidden></p>
   </header>
@@ -65,6 +66,7 @@
     restart: function () { return M.post("/api/restart", {}); }
   };
 
+  M.ready();
   var adapter = window.MUNSHI_REPLAY ? replayAdapter(window.MUNSHI_REPLAY) : localAdapter;
   M.byId("restart").addEventListener("click", function () {
     M.busy(true);

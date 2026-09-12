@@ -5,6 +5,7 @@ from __future__ import annotations
 from strands import Agent, tool
 from strands.types.tools import ToolContext
 
+from . import hindi
 from .complaints import MAKERS
 from .inbox import OPTIONS
 from .verdict import facts_for, investigate, rule_verdict
@@ -52,7 +53,8 @@ def card_reason(event, ledger, verdict, drafts, decided_by):
     return {"event_id": event.id, "kind": event.kind, "headline": verdict.headline,
             "evidence": facts_for(event, ledger), "options": [list(o) for o in OPTIONS[event.kind]],
             "party": event.party, "amount": event.amount, "when": event.when.strftime("%Y-%m-%d %H:%M"),
-            "drafts": dict(drafts), "decided_by": decided_by, "recommended": verdict.recommended}
+            "drafts": dict(drafts), "decided_by": decided_by, "recommended": verdict.recommended,
+            "hi": hindi.card(event, ledger)}
 
 
 def build_tools(household, prefs, investigator_model=None):
