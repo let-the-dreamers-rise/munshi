@@ -110,6 +110,15 @@ def dump_home_with(files):
     return pack(files)
 
 
+def test_messages_with_nothing_wrong_are_a_quiet_answer_not_an_error():
+    """Ordinary messages get the empty state, not a red line: finding nothing is good news."""
+    sms = ("Sent Rs.250.00 From HDFC Bank A/C *4521 To chaiwala@ybl On 12/09/26 Ref 624511873900\n\n"
+           "Rs.540.00 spent on HDFC Bank Card x9012 at BIGBASKET on 12-09-26. Avl limit Rs.1,20,000")
+    out = handle({"action": "start", "sms": sms})
+    assert out["state"]["cards"] == []
+    assert out["state"]["watched"]["payments"] == 2
+
+
 def test_a_giant_paste_is_refused():
     with pytest.raises(ValueError, match="too long"):
         handle({"action": "start", "sms": "x" * 200_000})

@@ -9,7 +9,7 @@
       worth: "Worth a look", double_charge: "Charged twice", renewal_due: "Renews soon",
       quiet: "Nothing needs you. Munshi is watching quietly.",
       paperwork: "The paperwork, already filled in", steps: "Your next steps", chose: "You chose: ",
-      copy: "Copy", copied: "Copied", copyAll: "Copy everything",
+      copy: "Copy", copied: "Copied", copyAll: "Copy everything", share: "Send to family on WhatsApp",
       copiedAll: "Copied — paste it into cybercrime.gov.in", selectText: "Select the text to copy",
       call1930: "Call 1930", callBank: function (b) { return "Call " + b; },
       onIt: "Munshi is on it…", other: "हिन्दी",
@@ -36,7 +36,7 @@
       steps: "आगे क्या करना है",
       chose: "आपने चुना: ",
       copy: "कॉपी करें", copied: "कॉपी हो गया",
-      copyAll: "सब कुछ कॉपी करें",
+      copyAll: "सब कुछ कॉपी करें", share: "घर वालों को WhatsApp पर भेजें",
       copiedAll: "कॉपी हो गया — cybercrime.gov.in पर "
                  + "पेस्ट करें",
       selectText: "कॉपी करने के लिए टेक्स्ट "
@@ -207,6 +207,12 @@
     return el("a", { cls: "btn" + (primary ? " primary" : ""), href: "tel:" + number, text: label });
   }
 
+  // Nobody deals with this alone: one tap opens WhatsApp with the whole pack, recipient still to choose.
+  function share(card) {
+    return el("a", { cls: "btn", target: "_blank", rel: "noopener",
+                     href: "https://wa.me/?text=" + encodeURIComponent(everything(card)), text: t().share });
+  }
+
   // In the first hour, the useful thing is a phone call, not more reading.
   function actions(card) {
     var bank = (card.drafts || {}).bank_dispute || {};
@@ -219,7 +225,8 @@
     return el("div", { cls: "choices" }, [
       dial(t().call1930, "1930", true),
       bank.helpline ? dial(t().callBank(bank.bank || "bank"), bank.helpline) : null,
-      copy
+      copy,
+      share(card)
     ]);
   }
 

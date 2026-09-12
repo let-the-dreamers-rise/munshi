@@ -56,9 +56,8 @@ def _start(request):
     sms = request.get("sms")
     now = _now(request)
     if sms:
+        # No events is a good answer, not an error: the page says so quietly and shows what was read.
         household = Household.from_messages("you", messages_from_text(sms, now), now=now)
-        if not household.events:
-            raise ValueError("Munshi read those messages and found nothing worth asking about.")
     else:
         household = demo_household(now=now)
     with tempfile.TemporaryDirectory() as tmp:
