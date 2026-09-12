@@ -17,6 +17,12 @@ from .readers import read
 
 BANK = "VM-HDFCBK"
 STRANGER = "+910000000000"
+# A pasted message has no sender id, but it usually signs itself. The complaint names the bank, so guessing
+# HDFC for everyone would put the wrong bank on a police report.
+BANKS = (("sbi", "AD-SBIINB"), ("state bank", "AD-SBIINB"), ("hdfc", "VM-HDFCBK"), ("icici", "JD-ICICIB"),
+         ("axis", "AD-AXISBK"), ("kotak", "VM-KOTAKB"), ("bank of baroda", "AD-BOBTXN"),
+         ("punjab national", "AD-PNBSMS"), ("pnb", "AD-PNBSMS"), ("yes bank", "VM-YESBNK"),
+         ("idfc", "VM-IDFCFB"))
 MAX_TEXT = 20_000
 MAX_BLOCKS = 40
 SPACING = timedelta(minutes=9)
@@ -35,13 +41,20 @@ def _time(text):
     return None
 
 
+def _bank_of(body):
+    """The bank this message signs itself as, so the complaint names the right one."""
+    low = body.lower()
+    found = [(low.find(word), sender) for word, sender in BANKS if word in low]
+    return min(found)[1] if found else BANK
+
+
 def _block(text, when):
     sender = (_FROM.search(text) or [None, ""])[1] if _FROM.search(text) else ""
     stamp = _AT.search(text)
     said = _time(stamp.group(1)) if stamp else None
     body = _AT.sub("", _FROM.sub("", text)).strip()
     if not sender:
-        sender = BANK if read(when, BANK, body) else STRANGER
+        sender = _bank_of(body) if read(when, BANK, body) else STRANGER
     return {"when": said or when, "sender": sender, "body": body}
 
 

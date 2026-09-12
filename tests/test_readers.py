@@ -85,6 +85,18 @@ def test_what_is_not_a_payment_is_dropped(name, sender, body):
     assert read(NOW, sender, body) is None
 
 
+def test_a_pasted_message_is_credited_to_the_bank_that_signed_it():
+    """The complaint names a bank, so pasted SBI text must not become an HDFC complaint."""
+    from munshi.paste import messages_from_text
+    from munshi.witness import Household
+
+    text = ("Dear customer your account will be BLOCKED. Update KYC immediately.\n\n"
+            "Dear UPI user A/C X4521 debited by 2500.0 on date 12Sep26 trf to RAMESH KUMAR "
+            "Refno 624511873920. If not u? call 1800111109. -SBI")
+    house = Household.from_messages("paste", messages_from_text(text, now=NOW), now=NOW)
+    assert house.events[0].bank == "SBI"
+
+
 def test_a_mandate_notice_is_not_a_payment_yet():
     """'will be debited' is a warning about Tuesday, not money that moved."""
     assert read(NOW, HDFC, "Rs.649.00 will be debited from A/c XX4521 on 15-09-26 towards NETFLIX mandate.") is None
