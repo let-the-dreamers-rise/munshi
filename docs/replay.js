@@ -1,16 +1,16 @@
 window.MUNSHI_REPLAY = {
- "recorded_at": "12 Sep 2026, 12:17",
+ "recorded_at": "12 Sep 2026, 12:20",
  "initial": {
   "household": "meera",
-  "now": "2026-09-12 12:17",
+  "now": "2026-09-12 12:20",
   "watched": {
    "payments": 212,
    "days": 99
   },
   "cards": [
    {
-    "id": "card-d65aeca158a6",
-    "event_id": "d65aeca158a6",
+    "id": "card-c11276d105ff",
+    "event_id": "c11276d105ff",
     "kind": "scam_shaped_payment",
     "headline": "Rs 12,000 went to kyc.update9@ybl, someone you have never paid, 9 minutes after a threat from an unknown number. This is how the KYC scam works.",
     "evidence": [
@@ -30,28 +30,28 @@ window.MUNSHI_REPLAY = {
     ],
     "party": "kyc.update9@ybl",
     "amount": 12000.0,
-    "when": "2026-09-12 12:12",
+    "when": "2026-09-12 12:15",
     "drafts": {
      "cybercrime_report": {
       "where": "1930 and https://cybercrime.gov.in",
-      "call_before": "13:12 on 12 Sep 2026",
-      "text": "Call 1930 now, before 13:12. The first hour is when a bank can still hold the money. Read them the fields below, then file the same details at cybercrime.gov.in under financial fraud and keep the acknowledgement number.",
+      "call_before": "13:15 on 12 Sep 2026",
+      "text": "Call 1930 now, before 13:15. The first hour is when a bank can still hold the money. Read them the fields below, then file the same details at cybercrime.gov.in under financial fraud and keep the acknowledgement number.",
       "fields": {
        "Category": "Online Financial Fraud",
        "Sub-category": "UPI related fraud",
-       "Date and time of transaction": "12 Sep 2026, 12:12",
+       "Date and time of transaction": "12 Sep 2026, 12:15",
        "Amount (Rs)": "12,000",
        "Transaction ID / UTR": "624511873920",
        "Bank": "HDFC Bank",
        "Account (last digits)": "4521",
        "Suspect UPI ID": "kyc.update9@ybl",
        "Suspect phone": "+919811234567",
-       "What happened": "I received a message from +919811234567 containing 'kyc', 'blocked' and 'immediately'. 9 minutes later, Rs 12,000 left my HDFC Bank account ending 4521 to kyc.update9@ybl on 12 Sep 2026, 12:12 (reference 624511873920). I had never paid this recipient before."
+       "What happened": "I received a message from +919811234567 containing 'kyc', 'blocked' and 'immediately'. 9 minutes later, Rs 12,000 left my HDFC Bank account ending 4521 to kyc.update9@ybl on 12 Sep 2026, 12:15 (reference 624511873920). I had never paid this recipient before."
       }
      },
      "bank_dispute": {
-      "subject": "Unauthorised UPI debit of Rs 12,000 on 12 Sep 2026, 12:12, reference 624511873920",
-      "body": "To the dispute desk, HDFC Bank\n\nAccount ending 4521\nAmount: Rs 12,000\nDate and time: 12 Sep 2026, 12:12\nReference: 624511873920\nRecipient: kyc.update9@ybl\n\nI did not knowingly authorise this payment to kyc.update9@ybl. Please block further debits to this recipient, raise a dispute, and ask the receiving bank to hold the amount. I am reporting it to 1930 and cybercrime.gov.in.\n\nThank you.",
+      "subject": "Unauthorised UPI debit of Rs 12,000 on 12 Sep 2026, 12:15, reference 624511873920",
+      "body": "To the dispute desk, HDFC Bank\n\nAccount ending 4521\nAmount: Rs 12,000\nDate and time: 12 Sep 2026, 12:15\nReference: 624511873920\nRecipient: kyc.update9@ybl\n\nI did not knowingly authorise this payment to kyc.update9@ybl. Please block further debits to this recipient, raise a dispute, and ask the receiving bank to hold the amount. I am reporting it to 1930 and cybercrime.gov.in.\n\nThank you.",
       "helpline": "18002586161",
       "bank": "HDFC Bank"
      },
@@ -60,15 +60,15 @@ window.MUNSHI_REPLAY = {
       "issue": "Fraud or unauthorised transaction",
       "transaction_ref": "624511873920",
       "amount": "12,000",
-      "date": "12 Sep 2026, 12:12",
+      "date": "12 Sep 2026, 12:15",
       "recipient": "kyc.update9@ybl",
       "note": "In the UPI app you paid from, open UPI Help (or Help, then report an issue) on this payment."
      }
     },
-    "interrupt_id": "v1:tool_call:playbook-0cc1c0a17deb:a03c9326-dd4c-5878-95a5-2d96fbe58668",
-    "session_id": "meera-d65aeca158a6",
+    "interrupt_id": "v1:tool_call:playbook-f74b0e040a87:a03c9326-dd4c-5878-95a5-2d96fbe58668",
+    "session_id": "meera-c11276d105ff",
     "decided_by": "rules",
-    "created": "2026-09-12T12:17:22",
+    "created": "2026-09-12T12:20:51",
     "status": "pending",
     "decision": "",
     "outcome": "",
@@ -97,10 +97,10 @@ window.MUNSHI_REPLAY = {
     "amount": 649.0,
     "when": "2026-08-13 09:00",
     "drafts": {},
-    "interrupt_id": "v1:tool_call:playbook-4bace5754e45:a03c9326-dd4c-5878-95a5-2d96fbe58668",
+    "interrupt_id": "v1:tool_call:playbook-6795282c0776:a03c9326-dd4c-5878-95a5-2d96fbe58668",
     "session_id": "meera-7aae1c1a494d",
     "decided_by": "rules",
-    "created": "2026-09-12T12:17:22",
+    "created": "2026-09-12T12:20:52",
     "status": "pending",
     "decision": "",
     "outcome": "",
@@ -145,10 +145,10 @@ window.MUNSHI_REPLAY = {
       "note": "This was a card payment, so UPI Help does not apply. Use the bank dispute."
      }
     },
-    "interrupt_id": "v1:tool_call:playbook-504f45609d1c:a03c9326-dd4c-5878-95a5-2d96fbe58668",
+    "interrupt_id": "v1:tool_call:playbook-bb2009adcb20:a03c9326-dd4c-5878-95a5-2d96fbe58668",
     "session_id": "meera-7265498325d2",
     "decided_by": "rules",
-    "created": "2026-09-12T12:17:23",
+    "created": "2026-09-12T12:20:52",
     "status": "pending",
     "decision": "",
     "outcome": "",
@@ -157,59 +157,59 @@ window.MUNSHI_REPLAY = {
   ],
   "audit": [
    {
-    "at": "2026-09-12T12:17:22",
+    "at": "2026-09-12T12:20:51",
     "agent": "munshi",
     "tool": "investigate_payment",
     "input": {
-     "event_id": "d65aeca158a6"
+     "event_id": "c11276d105ff"
     },
     "status": "success",
     "refused": null,
     "result": "{\"verdict\": {\"kind\": \"likely_scam\", \"confidence\": 0.9, \"headline\": \"Rs 12,000 went to kyc.update9@ybl, someone you have never paid, 9 minutes after a threat from an unknown number. This is how the KYC scam works.\", \"recommended\": \"report_now\"}, \"facts\": [\"kyc.update9@ybl had never been paid before: this is the first payment in 99 days of history.\", \"The payment came 9 minutes after a message from ",
-    "ms": 1.4
+    "ms": 3.0
    },
    {
-    "at": "2026-09-12T12:17:22",
+    "at": "2026-09-12T12:20:51",
     "agent": "munshi",
     "tool": "draft_cybercrime_report",
     "input": {
-     "event_id": "d65aeca158a6"
+     "event_id": "c11276d105ff"
     },
     "status": "success",
     "refused": null,
-    "result": "{\"where\": \"1930 and https://cybercrime.gov.in\", \"call_before\": \"13:12 on 12 Sep 2026\", \"text\": \"Call 1930 now, before 13:12. The first hour is when a bank can still hold the money. Read them the fields below, then file the same details at cybercrime.gov.in under financial fraud and keep the acknowledgement number.\", \"fields\": {\"Category\": \"Online Financial Fraud\", \"Sub-category\": \"UPI related frau",
-    "ms": 1.6
+    "result": "{\"where\": \"1930 and https://cybercrime.gov.in\", \"call_before\": \"13:15 on 12 Sep 2026\", \"text\": \"Call 1930 now, before 13:15. The first hour is when a bank can still hold the money. Read them the fields below, then file the same details at cybercrime.gov.in under financial fraud and keep the acknowledgement number.\", \"fields\": {\"Category\": \"Online Financial Fraud\", \"Sub-category\": \"UPI related frau",
+    "ms": 1.3
    },
    {
-    "at": "2026-09-12T12:17:22",
+    "at": "2026-09-12T12:20:51",
     "agent": "munshi",
     "tool": "draft_bank_dispute",
     "input": {
-     "event_id": "d65aeca158a6"
+     "event_id": "c11276d105ff"
     },
     "status": "success",
     "refused": null,
-    "result": "{\"subject\": \"Unauthorised UPI debit of Rs 12,000 on 12 Sep 2026, 12:12, reference 624511873920\", \"body\": \"To the dispute desk, HDFC Bank\\n\\nAccount ending 4521\\nAmount: Rs 12,000\\nDate and time: 12 Sep 2026, 12:12\\nReference: 624511873920\\nRecipient: kyc.update9@ybl\\n\\nI did not knowingly authorise this payment to kyc.update9@ybl. Please block further debits to this recipient, raise a dispute, and",
-    "ms": 1.4
+    "result": "{\"subject\": \"Unauthorised UPI debit of Rs 12,000 on 12 Sep 2026, 12:15, reference 624511873920\", \"body\": \"To the dispute desk, HDFC Bank\\n\\nAccount ending 4521\\nAmount: Rs 12,000\\nDate and time: 12 Sep 2026, 12:15\\nReference: 624511873920\\nRecipient: kyc.update9@ybl\\n\\nI did not knowingly authorise this payment to kyc.update9@ybl. Please block further debits to this recipient, raise a dispute, and",
+    "ms": 2.4
    },
    {
-    "at": "2026-09-12T12:17:22",
+    "at": "2026-09-12T12:20:51",
     "agent": "munshi",
     "tool": "draft_upi_help_complaint",
     "input": {
-     "event_id": "d65aeca158a6"
+     "event_id": "c11276d105ff"
     },
     "status": "success",
     "refused": null,
-    "result": "{\"applies\": true, \"issue\": \"Fraud or unauthorised transaction\", \"transaction_ref\": \"624511873920\", \"amount\": \"12,000\", \"date\": \"12 Sep 2026, 12:12\", \"recipient\": \"kyc.update9@ybl\", \"note\": \"In the UPI app you paid from, open UPI Help (or Help, then report an issue) on this payment.\"}",
-    "ms": 1.1
+    "result": "{\"applies\": true, \"issue\": \"Fraud or unauthorised transaction\", \"transaction_ref\": \"624511873920\", \"amount\": \"12,000\", \"date\": \"12 Sep 2026, 12:15\", \"recipient\": \"kyc.update9@ybl\", \"note\": \"In the UPI app you paid from, open UPI Help (or Help, then report an issue) on this payment.\"}",
+    "ms": 1.5
    },
    {
-    "at": "2026-09-12T12:17:22",
+    "at": "2026-09-12T12:20:51",
     "agent": "munshi",
     "tool": "ask_household",
     "input": {
-     "event_id": "d65aeca158a6"
+     "event_id": "c11276d105ff"
     },
     "status": "waiting for the household",
     "refused": null,
@@ -217,7 +217,7 @@ window.MUNSHI_REPLAY = {
     "ms": 0.0
    },
    {
-    "at": "2026-09-12T12:17:22",
+    "at": "2026-09-12T12:20:52",
     "agent": "munshi",
     "tool": "investigate_payment",
     "input": {
@@ -226,10 +226,10 @@ window.MUNSHI_REPLAY = {
     "status": "success",
     "refused": null,
     "result": "{\"verdict\": {\"kind\": \"renewal\", \"confidence\": 0.9, \"headline\": \"Netflix renews tomorrow at Rs 649. It was Rs 499.\", \"recommended\": \"remind\"}, \"facts\": [\"Netflix has charged you 3 times, every 31 days. The next charge is due tomorrow, 13 Sep.\", \"The last charge was Rs 649, up from Rs 499.\"], \"decided_by\": \"rules\"}",
-    "ms": 1.0
+    "ms": 1.8
    },
    {
-    "at": "2026-09-12T12:17:22",
+    "at": "2026-09-12T12:20:52",
     "agent": "munshi",
     "tool": "ask_household",
     "input": {
@@ -241,7 +241,7 @@ window.MUNSHI_REPLAY = {
     "ms": 0.0
    },
    {
-    "at": "2026-09-12T12:17:22",
+    "at": "2026-09-12T12:20:52",
     "agent": "munshi",
     "tool": "investigate_payment",
     "input": {
@@ -250,10 +250,10 @@ window.MUNSHI_REPLAY = {
     "status": "success",
     "refused": null,
     "result": "{\"verdict\": {\"kind\": \"double_charge\", \"confidence\": 0.8, \"headline\": \"You may be owed Rs 540: Zomato charged you twice and has not refunded it.\", \"recommended\": \"dispute\"}, \"facts\": [\"Zomato charged Rs 540 twice, 2 minutes apart, on 4 Sep.\", \"No refund of Rs 540 has arrived in the 7 days since.\"], \"decided_by\": \"rules\"}",
-    "ms": 1.6
+    "ms": 1.1
    },
    {
-    "at": "2026-09-12T12:17:23",
+    "at": "2026-09-12T12:20:52",
     "agent": "munshi",
     "tool": "draft_bank_dispute",
     "input": {
@@ -262,10 +262,10 @@ window.MUNSHI_REPLAY = {
     "status": "success",
     "refused": null,
     "result": "{\"subject\": \"Amount debited twice: Rs 540 at Zomato on 04 Sep 2026, 20:16\", \"body\": \"To the dispute desk, HDFC Bank\\n\\nAccount ending 9012\\nAmount: Rs 540\\nDate and time: 04 Sep 2026, 20:16\\nReference: not in the message\\nRecipient: Zomato\\n\\nThe same amount was charged twice, 2 minutes apart (first reference not in the message, second reference not in the message). I authorised one payment. Pleas",
-    "ms": 1.6
+    "ms": 1.1
    },
    {
-    "at": "2026-09-12T12:17:23",
+    "at": "2026-09-12T12:20:52",
     "agent": "munshi",
     "tool": "draft_upi_help_complaint",
     "input": {
@@ -274,10 +274,10 @@ window.MUNSHI_REPLAY = {
     "status": "success",
     "refused": null,
     "result": "{\"applies\": false, \"issue\": \"Amount debited twice\", \"transaction_ref\": \"\", \"amount\": \"540\", \"date\": \"04 Sep 2026, 20:16\", \"recipient\": \"Zomato\", \"note\": \"This was a card payment, so UPI Help does not apply. Use the bank dispute.\"}",
-    "ms": 1.3
+    "ms": 1.2
    },
    {
-    "at": "2026-09-12T12:17:23",
+    "at": "2026-09-12T12:20:52",
     "agent": "munshi",
     "tool": "ask_household",
     "input": {
@@ -291,11 +291,11 @@ window.MUNSHI_REPLAY = {
   ]
  },
  "outcomes": {
-  "card-d65aeca158a6": {
+  "card-c11276d105ff": {
    "report": {
     "card": {
-     "id": "card-d65aeca158a6",
-     "event_id": "d65aeca158a6",
+     "id": "card-c11276d105ff",
+     "event_id": "c11276d105ff",
      "kind": "scam_shaped_payment",
      "headline": "Rs 12,000 went to kyc.update9@ybl, someone you have never paid, 9 minutes after a threat from an unknown number. This is how the KYC scam works.",
      "evidence": [
@@ -315,28 +315,28 @@ window.MUNSHI_REPLAY = {
      ],
      "party": "kyc.update9@ybl",
      "amount": 12000.0,
-     "when": "2026-09-12 12:12",
+     "when": "2026-09-12 12:15",
      "drafts": {
       "cybercrime_report": {
        "where": "1930 and https://cybercrime.gov.in",
-       "call_before": "13:12 on 12 Sep 2026",
-       "text": "Call 1930 now, before 13:12. The first hour is when a bank can still hold the money. Read them the fields below, then file the same details at cybercrime.gov.in under financial fraud and keep the acknowledgement number.",
+       "call_before": "13:15 on 12 Sep 2026",
+       "text": "Call 1930 now, before 13:15. The first hour is when a bank can still hold the money. Read them the fields below, then file the same details at cybercrime.gov.in under financial fraud and keep the acknowledgement number.",
        "fields": {
         "Category": "Online Financial Fraud",
         "Sub-category": "UPI related fraud",
-        "Date and time of transaction": "12 Sep 2026, 12:12",
+        "Date and time of transaction": "12 Sep 2026, 12:15",
         "Amount (Rs)": "12,000",
         "Transaction ID / UTR": "624511873920",
         "Bank": "HDFC Bank",
         "Account (last digits)": "4521",
         "Suspect UPI ID": "kyc.update9@ybl",
         "Suspect phone": "+919811234567",
-        "What happened": "I received a message from +919811234567 containing 'kyc', 'blocked' and 'immediately'. 9 minutes later, Rs 12,000 left my HDFC Bank account ending 4521 to kyc.update9@ybl on 12 Sep 2026, 12:12 (reference 624511873920). I had never paid this recipient before."
+        "What happened": "I received a message from +919811234567 containing 'kyc', 'blocked' and 'immediately'. 9 minutes later, Rs 12,000 left my HDFC Bank account ending 4521 to kyc.update9@ybl on 12 Sep 2026, 12:15 (reference 624511873920). I had never paid this recipient before."
        }
       },
       "bank_dispute": {
-       "subject": "Unauthorised UPI debit of Rs 12,000 on 12 Sep 2026, 12:12, reference 624511873920",
-       "body": "To the dispute desk, HDFC Bank\n\nAccount ending 4521\nAmount: Rs 12,000\nDate and time: 12 Sep 2026, 12:12\nReference: 624511873920\nRecipient: kyc.update9@ybl\n\nI did not knowingly authorise this payment to kyc.update9@ybl. Please block further debits to this recipient, raise a dispute, and ask the receiving bank to hold the amount. I am reporting it to 1930 and cybercrime.gov.in.\n\nThank you.",
+       "subject": "Unauthorised UPI debit of Rs 12,000 on 12 Sep 2026, 12:15, reference 624511873920",
+       "body": "To the dispute desk, HDFC Bank\n\nAccount ending 4521\nAmount: Rs 12,000\nDate and time: 12 Sep 2026, 12:15\nReference: 624511873920\nRecipient: kyc.update9@ybl\n\nI did not knowingly authorise this payment to kyc.update9@ybl. Please block further debits to this recipient, raise a dispute, and ask the receiving bank to hold the amount. I am reporting it to 1930 and cybercrime.gov.in.\n\nThank you.",
        "helpline": "18002586161",
        "bank": "HDFC Bank"
       },
@@ -345,39 +345,39 @@ window.MUNSHI_REPLAY = {
        "issue": "Fraud or unauthorised transaction",
        "transaction_ref": "624511873920",
        "amount": "12,000",
-       "date": "12 Sep 2026, 12:12",
+       "date": "12 Sep 2026, 12:15",
        "recipient": "kyc.update9@ybl",
        "note": "In the UPI app you paid from, open UPI Help (or Help, then report an issue) on this payment."
       }
      },
-     "interrupt_id": "v1:tool_call:playbook-0cc1c0a17deb:a03c9326-dd4c-5878-95a5-2d96fbe58668",
-     "session_id": "meera-d65aeca158a6",
+     "interrupt_id": "v1:tool_call:playbook-f74b0e040a87:a03c9326-dd4c-5878-95a5-2d96fbe58668",
+     "session_id": "meera-c11276d105ff",
      "decided_by": "rules",
-     "created": "2026-09-12T12:17:22",
+     "created": "2026-09-12T12:20:51",
      "status": "decided",
      "decision": "report",
      "outcome": "Call 1930 now, inside the first hour, and read them the report fields.\nFile the same details at cybercrime.gov.in and keep the acknowledgement number.\nCall HDFC Bank on 18002586161 and ask them to block the recipient and raise a dispute.",
-     "decided": "2026-09-12T12:17:23"
+     "decided": "2026-09-12T12:20:52"
     },
     "audit": [
      {
-      "at": "2026-09-12T12:17:23",
+      "at": "2026-09-12T12:20:52",
       "agent": "munshi",
       "tool": "ask_household",
       "input": {
-       "event_id": "d65aeca158a6"
+       "event_id": "c11276d105ff"
       },
       "status": "success",
       "refused": null,
-      "result": "{\"event_id\": \"d65aeca158a6\", \"party\": \"kyc.update9@ybl\", \"decision\": \"report\", \"next_steps\": [\"Call 1930 now, inside the first hour, and read them the report fields.\", \"File the same details at cybercrime.gov.in and keep the acknowledgement number.\", \"Call HDFC Bank on 18002586161 and ask them to block the recipient and raise a dispute.\"]}",
+      "result": "{\"event_id\": \"c11276d105ff\", \"party\": \"kyc.update9@ybl\", \"decision\": \"report\", \"next_steps\": [\"Call 1930 now, inside the first hour, and read them the report fields.\", \"File the same details at cybercrime.gov.in and keep the acknowledgement number.\", \"Call HDFC Bank on 18002586161 and ask them to block the recipient and raise a dispute.\"]}",
       "ms": 1.1
      }
     ]
    },
    "fine": {
     "card": {
-     "id": "card-d65aeca158a6",
-     "event_id": "d65aeca158a6",
+     "id": "card-c11276d105ff",
+     "event_id": "c11276d105ff",
      "kind": "scam_shaped_payment",
      "headline": "Rs 12,000 went to kyc.update9@ybl, someone you have never paid, 9 minutes after a threat from an unknown number. This is how the KYC scam works.",
      "evidence": [
@@ -397,28 +397,28 @@ window.MUNSHI_REPLAY = {
      ],
      "party": "kyc.update9@ybl",
      "amount": 12000.0,
-     "when": "2026-09-12 12:12",
+     "when": "2026-09-12 12:15",
      "drafts": {
       "cybercrime_report": {
        "where": "1930 and https://cybercrime.gov.in",
-       "call_before": "13:12 on 12 Sep 2026",
-       "text": "Call 1930 now, before 13:12. The first hour is when a bank can still hold the money. Read them the fields below, then file the same details at cybercrime.gov.in under financial fraud and keep the acknowledgement number.",
+       "call_before": "13:15 on 12 Sep 2026",
+       "text": "Call 1930 now, before 13:15. The first hour is when a bank can still hold the money. Read them the fields below, then file the same details at cybercrime.gov.in under financial fraud and keep the acknowledgement number.",
        "fields": {
         "Category": "Online Financial Fraud",
         "Sub-category": "UPI related fraud",
-        "Date and time of transaction": "12 Sep 2026, 12:12",
+        "Date and time of transaction": "12 Sep 2026, 12:15",
         "Amount (Rs)": "12,000",
         "Transaction ID / UTR": "624511873920",
         "Bank": "HDFC Bank",
         "Account (last digits)": "4521",
         "Suspect UPI ID": "kyc.update9@ybl",
         "Suspect phone": "+919811234567",
-        "What happened": "I received a message from +919811234567 containing 'kyc', 'blocked' and 'immediately'. 9 minutes later, Rs 12,000 left my HDFC Bank account ending 4521 to kyc.update9@ybl on 12 Sep 2026, 12:12 (reference 624511873920). I had never paid this recipient before."
+        "What happened": "I received a message from +919811234567 containing 'kyc', 'blocked' and 'immediately'. 9 minutes later, Rs 12,000 left my HDFC Bank account ending 4521 to kyc.update9@ybl on 12 Sep 2026, 12:15 (reference 624511873920). I had never paid this recipient before."
        }
       },
       "bank_dispute": {
-       "subject": "Unauthorised UPI debit of Rs 12,000 on 12 Sep 2026, 12:12, reference 624511873920",
-       "body": "To the dispute desk, HDFC Bank\n\nAccount ending 4521\nAmount: Rs 12,000\nDate and time: 12 Sep 2026, 12:12\nReference: 624511873920\nRecipient: kyc.update9@ybl\n\nI did not knowingly authorise this payment to kyc.update9@ybl. Please block further debits to this recipient, raise a dispute, and ask the receiving bank to hold the amount. I am reporting it to 1930 and cybercrime.gov.in.\n\nThank you.",
+       "subject": "Unauthorised UPI debit of Rs 12,000 on 12 Sep 2026, 12:15, reference 624511873920",
+       "body": "To the dispute desk, HDFC Bank\n\nAccount ending 4521\nAmount: Rs 12,000\nDate and time: 12 Sep 2026, 12:15\nReference: 624511873920\nRecipient: kyc.update9@ybl\n\nI did not knowingly authorise this payment to kyc.update9@ybl. Please block further debits to this recipient, raise a dispute, and ask the receiving bank to hold the amount. I am reporting it to 1930 and cybercrime.gov.in.\n\nThank you.",
        "helpline": "18002586161",
        "bank": "HDFC Bank"
       },
@@ -427,35 +427,35 @@ window.MUNSHI_REPLAY = {
        "issue": "Fraud or unauthorised transaction",
        "transaction_ref": "624511873920",
        "amount": "12,000",
-       "date": "12 Sep 2026, 12:12",
+       "date": "12 Sep 2026, 12:15",
        "recipient": "kyc.update9@ybl",
        "note": "In the UPI app you paid from, open UPI Help (or Help, then report an issue) on this payment."
       }
      },
-     "interrupt_id": "v1:tool_call:playbook-0cc1c0a17deb:a03c9326-dd4c-5878-95a5-2d96fbe58668",
-     "session_id": "meera-d65aeca158a6",
+     "interrupt_id": "v1:tool_call:playbook-f74b0e040a87:a03c9326-dd4c-5878-95a5-2d96fbe58668",
+     "session_id": "meera-c11276d105ff",
      "decided_by": "rules",
-     "created": "2026-09-12T12:17:22",
+     "created": "2026-09-12T12:20:51",
      "status": "decided",
      "decision": "fine",
      "outcome": "Noted. Munshi will not ask about this payee again.",
-     "decided": "2026-09-12T12:17:23"
+     "decided": "2026-09-12T12:20:52"
     },
     "audit": [
      {
-      "at": "2026-09-12T12:17:23",
+      "at": "2026-09-12T12:20:52",
       "agent": "munshi",
       "tool": "ask_household",
       "input": {
-       "event_id": "d65aeca158a6"
+       "event_id": "c11276d105ff"
       },
       "status": "success",
       "refused": null,
-      "result": "{\"event_id\": \"d65aeca158a6\", \"party\": \"kyc.update9@ybl\", \"decision\": \"fine\", \"next_steps\": [\"Noted. Munshi will not ask about this payee again.\"]}",
-      "ms": 1.3
+      "result": "{\"event_id\": \"c11276d105ff\", \"party\": \"kyc.update9@ybl\", \"decision\": \"fine\", \"next_steps\": [\"Noted. Munshi will not ask about this payee again.\"]}",
+      "ms": 2.0
      },
      {
-      "at": "2026-09-12T12:17:23",
+      "at": "2026-09-12T12:20:52",
       "agent": "munshi",
       "tool": "remember_trusted_payee",
       "input": {
@@ -464,7 +464,7 @@ window.MUNSHI_REPLAY = {
       "status": "success",
       "refused": null,
       "result": "{\"trusted\": \"kyc.update9@ybl\"}",
-      "ms": 6.8
+      "ms": 13.7
      }
     ]
    }
@@ -494,18 +494,18 @@ window.MUNSHI_REPLAY = {
      "amount": 649.0,
      "when": "2026-08-13 09:00",
      "drafts": {},
-     "interrupt_id": "v1:tool_call:playbook-4bace5754e45:a03c9326-dd4c-5878-95a5-2d96fbe58668",
+     "interrupt_id": "v1:tool_call:playbook-6795282c0776:a03c9326-dd4c-5878-95a5-2d96fbe58668",
      "session_id": "meera-7aae1c1a494d",
      "decided_by": "rules",
-     "created": "2026-09-12T12:17:22",
+     "created": "2026-09-12T12:20:52",
      "status": "decided",
      "decision": "keep",
      "outcome": "Kept. Munshi will not remind you about this renewal.",
-     "decided": "2026-09-12T12:17:23"
+     "decided": "2026-09-12T12:20:53"
     },
     "audit": [
      {
-      "at": "2026-09-12T12:17:23",
+      "at": "2026-09-12T12:20:53",
       "agent": "munshi",
       "tool": "ask_household",
       "input": {
@@ -514,7 +514,7 @@ window.MUNSHI_REPLAY = {
       "status": "success",
       "refused": null,
       "result": "{\"event_id\": \"7aae1c1a494d\", \"party\": \"Netflix\", \"decision\": \"keep\", \"next_steps\": [\"Kept. Munshi will not remind you about this renewal.\"]}",
-      "ms": 1.2
+      "ms": 1.1
      }
     ]
    },
@@ -542,18 +542,18 @@ window.MUNSHI_REPLAY = {
      "amount": 649.0,
      "when": "2026-08-13 09:00",
      "drafts": {},
-     "interrupt_id": "v1:tool_call:playbook-4bace5754e45:a03c9326-dd4c-5878-95a5-2d96fbe58668",
+     "interrupt_id": "v1:tool_call:playbook-6795282c0776:a03c9326-dd4c-5878-95a5-2d96fbe58668",
      "session_id": "meera-7aae1c1a494d",
      "decided_by": "rules",
-     "created": "2026-09-12T12:17:22",
+     "created": "2026-09-12T12:20:52",
      "status": "decided",
      "decision": "cancel",
      "outcome": "Cancel it in the app or on the website before the due date. Munshi cannot cancel for you.",
-     "decided": "2026-09-12T12:17:24"
+     "decided": "2026-09-12T12:20:53"
     },
     "audit": [
      {
-      "at": "2026-09-12T12:17:24",
+      "at": "2026-09-12T12:20:53",
       "agent": "munshi",
       "tool": "ask_household",
       "input": {
@@ -562,7 +562,7 @@ window.MUNSHI_REPLAY = {
       "status": "success",
       "refused": null,
       "result": "{\"event_id\": \"7aae1c1a494d\", \"party\": \"Netflix\", \"decision\": \"cancel\", \"next_steps\": [\"Cancel it in the app or on the website before the due date. Munshi cannot cancel for you.\"]}",
-      "ms": 1.5
+      "ms": 2.6
      }
     ]
    }
@@ -608,18 +608,18 @@ window.MUNSHI_REPLAY = {
        "note": "This was a card payment, so UPI Help does not apply. Use the bank dispute."
       }
      },
-     "interrupt_id": "v1:tool_call:playbook-504f45609d1c:a03c9326-dd4c-5878-95a5-2d96fbe58668",
+     "interrupt_id": "v1:tool_call:playbook-bb2009adcb20:a03c9326-dd4c-5878-95a5-2d96fbe58668",
      "session_id": "meera-7265498325d2",
      "decided_by": "rules",
-     "created": "2026-09-12T12:17:23",
+     "created": "2026-09-12T12:20:52",
      "status": "decided",
      "decision": "dispute",
      "outcome": "Send the dispute letter to your bank, or read it to the helpline.",
-     "decided": "2026-09-12T12:17:24"
+     "decided": "2026-09-12T12:20:53"
     },
     "audit": [
      {
-      "at": "2026-09-12T12:17:24",
+      "at": "2026-09-12T12:20:53",
       "agent": "munshi",
       "tool": "ask_household",
       "input": {
@@ -628,7 +628,7 @@ window.MUNSHI_REPLAY = {
       "status": "success",
       "refused": null,
       "result": "{\"event_id\": \"7265498325d2\", \"party\": \"Zomato\", \"decision\": \"dispute\", \"next_steps\": [\"Send the dispute letter to your bank, or read it to the helpline.\"]}",
-      "ms": 1.7
+      "ms": 1.2
      }
     ]
    },
@@ -672,18 +672,18 @@ window.MUNSHI_REPLAY = {
        "note": "This was a card payment, so UPI Help does not apply. Use the bank dispute."
       }
      },
-     "interrupt_id": "v1:tool_call:playbook-504f45609d1c:a03c9326-dd4c-5878-95a5-2d96fbe58668",
+     "interrupt_id": "v1:tool_call:playbook-bb2009adcb20:a03c9326-dd4c-5878-95a5-2d96fbe58668",
      "session_id": "meera-7265498325d2",
      "decided_by": "rules",
-     "created": "2026-09-12T12:17:23",
+     "created": "2026-09-12T12:20:52",
      "status": "decided",
      "decision": "fine",
      "outcome": "Noted. Munshi will not ask about this payee again.",
-     "decided": "2026-09-12T12:17:24"
+     "decided": "2026-09-12T12:20:54"
     },
     "audit": [
      {
-      "at": "2026-09-12T12:17:24",
+      "at": "2026-09-12T12:20:54",
       "agent": "munshi",
       "tool": "ask_household",
       "input": {
@@ -692,7 +692,7 @@ window.MUNSHI_REPLAY = {
       "status": "success",
       "refused": null,
       "result": "{\"event_id\": \"7265498325d2\", \"party\": \"Zomato\", \"decision\": \"fine\", \"next_steps\": [\"Noted. Munshi will not ask about this payee again.\"]}",
-      "ms": 1.3
+      "ms": 1.0
      }
     ]
    }

@@ -77,14 +77,24 @@ aside h2 { margin-top: 0; }
 .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
 
 /* The hosted product: a first screen for someone who has never heard of this. */
-.hero { max-width: 1080px; margin: 0 auto; padding: 56px 20px 8px; display: grid; gap: 40px;
-        grid-template-columns: minmax(0, 1.15fr) minmax(0, .85fr); align-items: start; }
-@media (max-width: 860px) { .hero { grid-template-columns: 1fr; gap: 28px; padding-top: 32px; } }
+.hero { max-width: 1080px; margin: 0 auto; padding: 56px 20px 8px; display: grid; column-gap: 44px; row-gap: 18px;
+        grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr); align-items: start;
+        grid-template-areas: "mark thread" "title thread" "say thread"; }
+.hero .mark { grid-area: mark; }
+.hero h1 { grid-area: title; }
+.hero .thread { grid-area: thread; }
+.hero .say { grid-area: say; }
+@media (max-width: 860px) {
+  .hero { grid-template-columns: 1fr; grid-template-areas: "mark" "title" "thread" "say"; row-gap: 22px;
+          padding-top: 34px; }
+  .hero .thread { max-width: 34rem; }
+}
 .hero h1 { font: 500 clamp(32px, 5vw, 50px)/1.1 var(--serif); margin: 0 0 18px; max-width: 16ch; letter-spacing: -.01em; }
 .hero p.lede { font-size: 17px; max-width: 56ch; margin: 0 0 12px; }
 .hero p.small { color: var(--muted); font-size: 14px; max-width: 56ch; }
 .hero .bar { margin-top: 22px; }
-.hero .mark { display: block; margin-bottom: 26px; }
+.hero .mark { display: block; margin: 0; }
+.hero .say > *:first-child { margin-top: 0; }
 
 /* The thread the family actually gets, as the hero's picture. */
 .thread { display: flex; flex-direction: column; gap: 10px; }

@@ -32,20 +32,27 @@
 
   function clock(card) {
     var deadline = parseWhen(card.when).getTime() + 60 * 60 * 1000;
-    var big = el("b"), words = el("span");
+    var big = el("b", { "aria-hidden": "true" }), words = el("span", { "aria-hidden": "true" });
+    // The digits change every second; a screen reader is told only when the minute does.
+    var spoken = el("span", { cls: "sr" }), said = null;
     function tick() {
       var left = Math.floor((deadline - nowMs()) / 1000);
+      var mins = Math.max(0, Math.ceil(left / 60));
       if (left > 0) {
         big.textContent = Math.floor(left / 60) + ":" + String(left % 60).padStart(2, "0");
         words.textContent = "left in the first hour, while the bank can still hold the money.";
+        if (mins !== said) spoken.textContent = "About " + mins + " minute" + (mins === 1 ? "" : "s") +
+          " left in the first hour, while the bank can still hold the money.";
       } else {
         big.textContent = "0:00";
         words.textContent = "The first hour has passed. Report anyway: 1930 and the bank still act on it.";
+        if (said !== 0) spoken.textContent = "The first hour has passed. Report anyway: 1930 and the bank still act on it.";
       }
+      said = left > 0 ? mins : 0;
     }
     tick();
     timers.push(setInterval(tick, 1000));
-    return el("div", { cls: "clock", role: "timer" }, [big, words]);
+    return el("div", { cls: "clock", role: "timer", "aria-live": "polite" }, [big, words, spoken]);
   }
 
   function draftView(name, d) {
@@ -141,7 +148,7 @@
   }
 
   function render(s) {
-    timers.forEach(clearInterval);
+    timers.forEach(function (t) { clearInterval(t); clearTimeout(t); });
     timers = [];
     var who = byId("who");
     if (who) who.textContent = watching(s);
@@ -160,20 +167,30 @@
     renderLog(s.audit || []);
   }
 
+  function logRow(r) {
+    var cls = r.refused ? "refused" : (r.status === "waiting for the household" ? "waiting" : "");
+    return el("li", { cls: cls }, [
+      el("span", { cls: "t", text: (r.at || "").slice(11, 19) + " " }),
+      el("span", { cls: "n", text: r.tool }),
+      el("span", { text: r.status && r.status !== "success" ? " " + r.status : "" }),
+      r.refused ? el("span", { cls: "r", text: r.refused }) : null
+    ]);
+  }
+
+  // The agent's own log, revealed in the order it happened rather than all at once, so a
+  // person can see what it did. Nothing here is invented: these rows are the audit file.
   function renderLog(rows) {
     var log = byId("log");
     if (!log) return;
     if (rows.length < shown) { log.replaceChildren(); shown = 0; }
-    rows.slice(shown).forEach(function (r) {
-      var cls = r.refused ? "refused" : (r.status === "waiting for the household" ? "waiting" : "");
-      log.insertBefore(el("li", { cls: cls }, [
-        el("span", { cls: "t", text: (r.at || "").slice(11, 19) + " " }),
-        el("span", { cls: "n", text: r.tool }),
-        el("span", { text: r.status && r.status !== "success" ? " " + r.status : "" }),
-        r.refused ? el("span", { cls: "r", text: r.refused }) : null
-      ]), log.firstChild);
-    });
+    var fresh = rows.slice(shown);
     shown = rows.length;
+    var quick = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    var step = quick || fresh.length < 2 ? 0 : Math.min(180, 1400 / fresh.length);
+    fresh.forEach(function (r, i) {
+      if (!step) { log.insertBefore(logRow(r), log.firstChild); return; }
+      timers.push(setTimeout(function () { log.insertBefore(logRow(r), log.firstChild); }, i * step));
+    });
   }
 
   function busy(on) {

@@ -9,6 +9,13 @@ and asks the family one question. It never moves money: no tool can, and a hook 
 
 Built for the AWS **Agents for Humans** hackathon, Everyday track.
 
+### [Open it: munshi-upi.vercel.app](https://munshi-upi.vercel.app)
+
+No install, no account. Watch it handle a scam that happened five minutes ago — or **paste your own bank SMS**
+and get the real paperwork back, with your reference number in it.
+
+[![Munshi: the first hour after a UPI scam, handled](docs/hero.png)](https://munshi-upi.vercel.app)
+
 ![Munshi's inbox: one card, a clock, and the paperwork already filled in](docs/inbox.png)
 
 ## Why the first hour
@@ -103,6 +110,15 @@ flowchart LR
 - **The data rule.** Message bodies never leave the phone. A test checks that the payload holds no text.
 - **The local inbox** binds to 127.0.0.1, checks the Host header (DNS rebinding) and only accepts state
   changes that are JSON with an `X-Munshi` header, which another origin cannot send without a preflight.
+
+## The hosted demo, and why it has no database
+
+[munshi-upi.vercel.app](https://munshi-upi.vercel.app) runs the same agent on a stateless serverless function.
+That should be impossible for an agent that pauses mid-tool-call and waits for a person: the second request can
+land on a different machine. So a whole run — inbox, audit log and the paused Strands session — is packed into
+one string, handed to the browser, and sent back with the family's answer ([`portable.py`](munshi/portable.py)).
+The agent resumes from the exact tool call that asked, and the household's state never sits on a server. Pasted
+messages are read once, in memory, and never written down.
 
 ## Run it
 
@@ -230,7 +246,10 @@ munshi/verdict.py     the investigator sub-agent and its rules fallback
 munshi/agent.py       the orchestrator's tools and system prompt
 munshi/runner.py      one session per event, interrupt -> card -> resume
 munshi/playbook.py    a no-weights model for offline runs
-munshi/serve.py       the loopback inbox; static/index.html is the page
+munshi/paste.py       someone's own messages, pasted into a web page
+munshi/portable.py    a whole run, packed small enough to live in a browser tab
+munshi/web.py         the hosted demo's stateless brain; site/ is the Vercel app
+munshi/serve.py       the loopback inbox; static/ holds the shared page
 munshi/app.py         the AgentCore Runtime handler
 ```
 
