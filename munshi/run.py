@@ -7,6 +7,8 @@
     python -m munshi.run payload         what the phone sends to AgentCore, as a scan request
 
 --model playbook runs with no credentials; bedrock (default) and ollama use a real model.
+--model tempted is the playbook with one difference: it reaches for a tool to move
+money, which the policy hook refuses and the audit log records.
 """
 
 from __future__ import annotations
@@ -38,7 +40,9 @@ def main(argv=None):
     parser.add_argument("command", choices=["demo", "cards", "decide", "serve", "payload"])
     parser.add_argument("args", nargs="*")
     parser.add_argument("--home", default=".munshi")
-    parser.add_argument("--model", default=None, help="bedrock (default), ollama or playbook")
+    parser.add_argument("--model", default=None,
+                        help="bedrock (default), ollama, playbook, or tempted (the playbook, reaching "
+                             "for a tool to move money, so you can watch the hook refuse it)")
     parser.add_argument("--port", type=int, default=8765)
     parser.add_argument("--days", type=int, default=0, help="payload: only the last N days of the ledger")
     opts = parser.parse_args(argv)

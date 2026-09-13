@@ -98,6 +98,10 @@ flowchart LR
   tools.* The investigator gets its own allow-list, which contains only its `Verdict` output.
 - **`AuditHook`** (`AfterToolCallEvent`) writes every call, refused or not, to `audit.jsonl`. The runner
   adds the one moment Strands has no after-call event for: a tool that paused to ask the family.
+- **See the refusal yourself.** *What if it tried to pay?* on the live demo, or `--model tempted` locally,
+  runs the same loop with a model that reaches for a `send_money` tool before doing its job. The red line
+  in the log is that call being cancelled: same hook, same event loop, same audit file. Nothing is staged
+  — there is no such tool to reach.
 - **Numbers are computed, never generated.** Amounts, times, references and "58 times your usual payment"
   come from the ledger. The complaint drafts are templates filled from the bank's message. A model writes
   one headline and picks a recommendation from a closed set.
@@ -134,6 +138,13 @@ python -m munshi.run serve --model playbook
 ```
 
 Open http://127.0.0.1:8765. *Replay the afternoon* starts again with the scam five minutes old.
+
+```bash
+python -m munshi.run demo --model tempted
+```
+
+The same run with a model that reaches for a tool to move the money itself, so you can watch the policy
+hook refuse it in `audit.jsonl`.
 
 To check this machine is ready for Bedrock (credentials, region, model access) and see exactly what is missing:
 
