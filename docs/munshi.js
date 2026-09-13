@@ -8,6 +8,10 @@
       now: "Now", later: "When you have a minute", handled: "Handled", needs: "Needs you now",
       worth: "Worth a look", double_charge: "Charged twice", renewal_due: "Renews soon",
       quiet: "Nothing needs you. Munshi is watching quietly.",
+      quietYours: "Munshi read your messages and found nothing worth raising. It speaks up when money goes to a "
+        + "payee you have never paid within half an hour of a threatening message, when the same charge repeats "
+        + "with no refund, or when a subscription is about to renew. Paste the threatening message too, and a few "
+        + "weeks of ordinary bank SMS, so it has something to compare with.",
       paperwork: "The paperwork, already filled in", steps: "Your next steps", chose: "You chose: ",
       copy: "Copy", copied: "Copied", copyAll: "Copy everything", share: "Send to family on WhatsApp",
       copiedAll: "Copied — paste it into cybercrime.gov.in", selectText: "Select the text to copy",
@@ -31,6 +35,10 @@
       renewal_due: "जल्द रिन्यू होगा",
       quiet: "अभी कुछ ज़रूरी नहीं है। "
              + "मुंशी चुपचाप देख रहा है।",
+      quietYours: "मुंशी ने आपके मैसेज पढ़े और बताने लायक कुछ नहीं मिला। "
+        + "मुंशी तब बोलता है जब किसी धमकी भरे मैसेज के आधे घंटे के अंदर किसी नए पेयी को पैसे जाएं, "
+        + "एक ही चार्ज दो बार लगे और रिफंड न आए, या कोई सब्सक्रिप्शन रिन्यू होने वाला हो। "
+        + "धमकी वाला मैसेज और कुछ हफ़्तों के आम बैंक मैसेज भी पेस्ट करें, ताकि तुलना करने को कुछ हो।",
       paperwork: "कागज़ी कार्रवाई, पहले "
                  + "से भरी हुई",
       steps: "आगे क्या करना है",
@@ -271,7 +279,7 @@
     main.replaceChildren.apply(main, [
       section(t().now, now.concat(done.filter(reported)),
               function (c) { return c.status === "pending" ? pendingCard(c) : doneCard(c); },
-              later.length || done.length ? null : t().quiet),
+              later.length || done.length ? null : (s.household === "you" ? t().quietYours : t().quiet)),
       section(t().later, later, pendingCard),
       section(t().handled, done.filter(function (c) { return !reported(c); }), doneCard)
     ].filter(Boolean));
