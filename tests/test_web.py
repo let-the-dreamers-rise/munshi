@@ -126,3 +126,15 @@ def test_a_ping_wakes_the_function_and_says_nothing_else():
 def test_a_giant_paste_is_refused():
     with pytest.raises(ValueError, match="too long"):
         handle({"action": "start", "sms": "x" * 200_000})
+
+
+def test_the_page_can_ask_for_the_tempted_model_and_sees_the_refusal():
+    out = handle({"action": "start", "tempt": True})
+    refused = [row for row in out["state"]["audit"] if row["refused"]]
+    assert refused and refused[0]["tool"] == "send_money"
+    assert [c for c in out["state"]["cards"] if c["status"] == "pending"]
+
+
+def test_a_plain_start_never_reaches_for_it():
+    out = handle({"action": "start"})
+    assert not [row for row in out["state"]["audit"] if row["refused"]]

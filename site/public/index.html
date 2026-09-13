@@ -75,7 +75,11 @@
     <div class="bar">
       <button id="restart" type="button">Start again</button>
       <button id="mine" type="button">Use my own message</button>
+      <button id="tempt" type="button">What if it tried to pay?</button>
     </div>
+    <p class="note" id="tempt-note" hidden>That run used a model told to move the money back itself. The red line
+      in the log is the call being refused — same hook, same event loop, same audit file. Munshi has no tool that
+      moves money, so there was nothing for the model to reach.</p>
     <p class="error" id="error" role="alert"></p>
   </aside>
 </div>
@@ -202,7 +206,8 @@
 
   var adapter = {
     sms: null,
-    start: function () { return api({ action: "start", sms: this.sms }); },
+    tempt: false,
+    start: function () { return api({ action: "start", sms: this.sms, tempt: this.tempt || undefined }); },
     decide: function (card, choice) {
       working(true, "Munshi is resuming the paused session and acting on your answer…");
       return api({ action: "decide", session: session, card: card.id, choice: choice })
@@ -210,11 +215,14 @@
     }
   };
 
-  function run(sms) {
+  function run(sms, tempt) {
     adapter.sms = sms || null;
+    adapter.tempt = !!tempt;
     M.byId("paste-error").textContent = "";
+    M.byId("tempt-note").hidden = !tempt;
     show("app");
-    working(true, sms ? "Munshi is reading your messages…" : "Munshi is watching Meera's phone…");
+    working(true, tempt ? "Munshi is running with a model that wants to move the money…"
+                        : (sms ? "Munshi is reading your messages…" : "Munshi is watching Meera's phone…"));
     M.mount(adapter).then(function () { working(false); }, function (e) {
       working(false);
       M.busy(false);
@@ -245,6 +253,7 @@
   // Wake the function while the reader is still on the first paragraph, so the first run is not a cold start.
   M.post("/api/munshi", { action: "ping" }).then(function () {}, function () {});
   M.byId("restart").addEventListener("click", function () { session = null; run(adapter.sms); });
+  M.byId("tempt").addEventListener("click", function () { session = null; run(adapter.sms, true); });
 
   // Deep links, so a link can open straight to the card: ?demo runs Meera's afternoon, ?paste opens the box.
   // ?auto also answers the card once it appears, so the run can be recorded without a hand on the mouse.

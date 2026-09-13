@@ -52,6 +52,12 @@ def _in_readers_clock(state, request):
     return {**state, "audit": rows}
 
 
+def _model_for(request):
+    """The demo page can ask for the tempted playbook: the same loop with a model that reaches for a
+    tool to move money, so a visitor can watch the policy hook refuse it. Never a default."""
+    return "tempted" if request.get("tempt") else model_kind()
+
+
 def _start(request):
     sms = request.get("sms")
     now = _now(request)
@@ -62,7 +68,7 @@ def _start(request):
         household = demo_household(now=now)
     with tempfile.TemporaryDirectory() as tmp:
         home = Path(tmp) / "home"
-        service = Service(home, household=household, model_kind=model_kind())
+        service = Service(home, household=household, model_kind=_model_for(request))
         service.scan()
         return {"state": _in_readers_clock(service.state(), request), "session": dump_home(home)}
 

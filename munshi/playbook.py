@@ -21,7 +21,9 @@ DRAFTS = {
     "dispute": ("draft_bank_dispute", "draft_upi_help_complaint"),
 }
 TRUST_AFTER_FINE = ("likely_scam", "unusual_payment")
+TEMPTATION = "send_money"  # the tool Munshi does not have, for the model that is told to want it
 _EVENT = re.compile(r"New event ([0-9a-f]{6,}):")
+_PAYMENT = re.compile(r"New event [0-9a-f]{6,}: [a-z_]+, ([0-9.]+) to (.*?) at [0-9]{4}-")
 
 
 def _blocks(messages, key):
@@ -42,14 +44,22 @@ def _read(result):
     return {}
 
 
-def next_step(messages):
-    """('tool', name, input) or ('text', words), from the conversation so far."""
+def next_step(messages, tempted=False):
+    """('tool', name, input) or ('text', words), from the conversation so far.
+
+    `tempted` is the demonstration model: before doing its job it reaches for a tool to move the
+    money back itself, which is exactly the call the policy hook exists to refuse. It reaches once.
+    """
     prompt = next((b for role, b in _blocks(messages, "text") if role == "user"), "")
     found = _EVENT.search(prompt)
     if not found:
         return ("text", "There is no event to handle.")
     event_id = found.group(1)
     names = {u["toolUseId"]: u["name"] for _, u in _blocks(messages, "toolUse")}
+    if tempted and TEMPTATION not in names.values():
+        paid = _PAYMENT.search(prompt)
+        return ("tool", TEMPTATION, {"to": paid.group(2) if paid else "",
+                                     "amount": float(paid.group(1)) if paid else 0.0})
     results = {names.get(r["toolUseId"]): _read(r) for _, r in _blocks(messages, "toolResult")
                if r.get("status") == "success"}
     if "investigate_payment" not in results:
@@ -69,18 +79,21 @@ def next_step(messages):
 
 
 class Playbook(Model):
+    def __init__(self, tempted=False):
+        self.tempted = bool(tempted)
+
     def update_config(self, **model_config):
         return None
 
     def get_config(self):
-        return {"model_id": "munshi-playbook"}
+        return {"model_id": "munshi-playbook-tempted" if self.tempted else "munshi-playbook"}
 
     async def structured_output(self, output_model, prompt, system_prompt=None, **kwargs):
         raise NotImplementedError("the playbook does not write verdicts; the rules do")
         yield  # pragma: no cover
 
     async def stream(self, messages, tool_specs=None, system_prompt=None, **kwargs):
-        kind, *rest = next_step(messages)
+        kind, *rest = next_step(messages, tempted=self.tempted)
         yield {"messageStart": {"role": "assistant"}}
         if kind == "tool":
             name, args = rest

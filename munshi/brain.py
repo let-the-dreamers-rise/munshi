@@ -22,9 +22,9 @@ def bedrock_settings():
 
 def make_model(kind=None):
     kind = (kind or os.environ.get("MUNSHI_MODEL") or "bedrock").lower()
-    if kind == "playbook":
+    if kind in ("playbook", "tempted"):
         from .playbook import Playbook
-        return Playbook()
+        return Playbook(tempted=kind == "tempted")
     if kind == "bedrock":
         from strands.models import BedrockModel
         return BedrockModel(**bedrock_settings())
@@ -35,7 +35,11 @@ def make_model(kind=None):
     raise ValueError("MUNSHI_MODEL must be 'bedrock', 'ollama' or 'playbook', not {0!r}".format(kind))
 
 
+# 'tempted' is the playbook with one difference: it reaches for a tool to move money, so anyone can
+# watch the policy hook refuse it. It is offered on the demo page, never as a default.
+
+
 def make_investigator(kind=None):
     """The investigator uses the same provider, except the playbook, which leaves verdicts to rules."""
     kind = (kind or os.environ.get("MUNSHI_MODEL") or "bedrock").lower()
-    return None if kind == "playbook" else make_model(kind)
+    return None if kind in ("playbook", "tempted") else make_model(kind)
