@@ -97,14 +97,25 @@ def words_in(body):
     return sorted(kept, key=lambda w: (-len(w), w))
 
 
+# One ordinary word is not a scam script. A friend can write "parcel" or "task"; naming the whole
+# script on that is a confident wrong claim, so it takes either two words or one distinctive one.
+# Anything with a space in it is already distinctive enough.
+STRONG = frozenset({"kyc", "re-kyc", "aadhaar", "lottery", "anydesk", "teamviewer", "trai",
+                    "narcotics", "fedex", "dhl", "demat", "cvv", "bijli"})
+
+
+def _strong(word):
+    return " " in word or word in STRONG
+
+
 def classify(words):
-    """The script these words follow, or None when they follow none we know."""
+    """The script these words follow, or None when they follow none we know well enough to name."""
     words = set(words or ())
     best, score = None, 0
     for pattern in PATTERNS:
-        hits = len(words & set(pattern.words))
-        if hits > score:
-            best, score = pattern, hits
+        hits = words & set(pattern.words)
+        if len(hits) > score and (len(hits) > 1 or any(_strong(w) for w in hits)):
+            best, score = pattern, len(hits)
     return best
 
 

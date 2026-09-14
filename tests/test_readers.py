@@ -101,3 +101,12 @@ def test_a_mandate_notice_is_not_a_payment_yet():
     """'will be debited' is a warning about Tuesday, not money that moved."""
     assert read(NOW, HDFC, "Rs.649.00 will be debited from A/c XX4521 on 15-09-26 towards NETFLIX mandate.") is None
     assert read(NOW, HDFC, "Rs.649.00 debited from A/c XX4521 on 15-09-26 towards NETFLIX.") is not None
+
+
+def test_a_real_debit_is_not_lost_because_the_same_message_warns_of_a_future_one():
+    """Banks put both in one SMS. Dropping the whole message would hide money that has gone."""
+    body = ("Rs.12000.00 debited from A/c XX4521 on 12-09-26 to kyc.update9@ybl UPI Ref 624511873920. "
+            "Your NETFLIX mandate of Rs.649.00 will be debited on 15-09-26.")
+    txn = read(NOW, HDFC, body)
+    assert txn is not None
+    assert txn.amount == 12000.0 and txn.party == "kyc.update9@ybl"

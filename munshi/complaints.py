@@ -35,7 +35,7 @@ def cybercrime_report(event):
             suspect, _words(event), minutes, story)
     pattern = named(event.evidence)
     if pattern:
-        story += " The message follows {0}.".format(pattern.en)
+        story += " The message follows the pattern of {0}.".format(pattern.en)
     fields = {
         "Category": "Online Financial Fraud",
         "Sub-category": "UPI related fraud" if event.channel == "upi" or "@" in event.party else "Other financial fraud",

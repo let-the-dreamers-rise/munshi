@@ -80,5 +80,16 @@ def test_one_pasted_payment_is_not_compared_with_itself():
 def test_the_police_report_says_which_script_the_message_followed():
     event = detect(phone(digital_arrest_afternoon()), now=NOW)[0]
     story = cybercrime_report(event)["fields"]["What happened"]
-    assert "digital arrest scam" in story
+    assert "the pattern of the digital arrest scam" in story
     assert "85,000" in story
+
+
+def test_one_ordinary_word_is_not_enough_to_name_a_script():
+    """A friend asking about a parcel must not be called the courier scam."""
+    words = scams.words_in("Please send 500 for the parcel today, urgent")
+    assert "parcel" in words and "urgent" in words
+    assert scams.classify(words) is None
+
+
+def test_one_distinctive_word_is_enough():
+    assert scams.classify(scams.words_in("Update your KYC today")).name == "kyc"

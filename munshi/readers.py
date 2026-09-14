@@ -23,6 +23,7 @@ import re
 from nyaya.money.parse import Transaction, account_of, channel_of, is_bank_sender, parse_message
 
 FUTURE = re.compile(r"\bwill\s+be\s+(?:debited|credited|deducted|charged)\b", re.I)
+_SENTENCE = re.compile(r"[^.;\n]+[.;\n]?")
 
 # An amount with no Rs/INR in front of it. The number must follow the direction
 # word immediately, so a reference number ("debited by UPI:6245...") cannot pass.
@@ -86,11 +87,23 @@ def _with_party(txn, party):
     return Transaction(txn.when, txn.amount, txn.direction, party, txn.channel, txn.account, txn.sender, txn.body)
 
 
+def _now_not_later(body):
+    """The message without the sentence that warns about a future charge.
+
+    One SMS often carries both -- money that has just gone, and a mandate due on Tuesday. Dropping
+    the whole message would hide the payment; keeping it whole would invent one.
+    """
+    if not FUTURE.search(body):
+        return body
+    return "".join(s for s in _SENTENCE.findall(body) if not FUTURE.search(s))
+
+
 def read(when, sender, body):
     """One message as a Transaction, or None if no money moved."""
-    if FUTURE.search(body or ""):
+    body = _now_not_later(body or "")
+    if not body.strip():
         return None
-    if not is_bank_sender(sender, body or ""):
+    if not is_bank_sender(sender, body):
         return None
     txn = parse_message(when, sender, body)
     if txn is None:
