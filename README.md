@@ -248,7 +248,14 @@ entrypoint and the tests.
   unusual payment if it is large, and not at all if it is small.
 - `audit.jsonl`, `inbox.json` and `household.json` hold payees, amounts and the last digits of accounts in
   plain files on the device (or in the AgentCore session). There is no encryption or retention policy yet.
-- Not yet run end to end on Bedrock. With real models so far: qwen2.5:3b through Ollama drove the whole loop,
+- Not yet run end to end on Bedrock, and the reason is worth stating exactly. Credentials and model access on
+  the author's account check out (`scripts/aws_check.py` passes both, and `ListFoundationModels` returns Nova
+  Pro), but the account is on the AWS free plan, whose Bedrock quota *Model invocation max tokens per day for
+  Amazon Nova Pro* reads `0.0` and is marked not adjustable in Service Quotas. Every `Converse` call therefore
+  comes back `ThrottlingException: Too many tokens per day`, in every region tried. `scripts/bedrock_run.py`
+  does the whole run and writes the transcript to `docs/bedrock-run.md` in one command the moment that quota
+  is non-zero.
+- With real models so far: qwen2.5:3b through Ollama drove the whole loop,
   from investigation to interrupt to resume ([the audit log](docs/real-model-run.md)), though as the investigator
   it sometimes fails structured output and the rules answer, as the card records. granite3.2:8b could not call
   tools at all and wrote a made-up verdict as prose; the family never saw it, because cards only come from tool
