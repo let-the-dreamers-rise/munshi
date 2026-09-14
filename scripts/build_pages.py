@@ -47,6 +47,11 @@ def record(work):
     return {"recorded_at": datetime.now().strftime("%d %b %Y, %H:%M"), "initial": initial, "outcomes": outcomes}
 
 
+def _write(path, text):
+    with open(path, "w", encoding="utf-8", newline="\n") as handle:
+        handle.write(text)
+
+
 def main():
     with tempfile.TemporaryDirectory() as tmp:
         data = record(Path(tmp))
@@ -58,9 +63,9 @@ def main():
     docs.mkdir(exist_ok=True)
     for name in SHARED:
         shutil.copyfile(static / name, docs / name)
-    (docs / "index.html").write_text(page.replace(MARKER, '<script src="replay.js"></script>\n' + MARKER, 1),
-                                     encoding="utf-8")
-    (docs / "replay.js").write_text("window.MUNSHI_REPLAY = " + json.dumps(data, indent=1) + ";\n", encoding="utf-8")
+    # newline="\n" so a rebuild on Windows is not a whole-file diff against what the repo already holds.
+    _write(docs / "index.html", page.replace(MARKER, '<script src="replay.js"></script>\n' + MARKER, 1))
+    _write(docs / "replay.js", "window.MUNSHI_REPLAY = " + json.dumps(data, indent=1) + ";\n")
     (docs / ".nojekyll").write_text("", encoding="utf-8")
     cards = len(data["initial"]["cards"])
     print("docs/index.html and docs/replay.js: {0} cards, {1} recorded decisions".format(
