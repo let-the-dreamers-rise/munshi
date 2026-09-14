@@ -14,3 +14,7 @@ dist/
 .bedrock_agentcore.yaml
 Dockerfile
 .dockerignore
+
+# the recorded demo (upload it, do not commit it)
+demo.mp4
+_recording/
