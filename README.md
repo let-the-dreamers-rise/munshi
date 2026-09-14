@@ -47,6 +47,9 @@ call the agent made.
 
 ## How it works
 
+As an image: [docs/architecture.png](docs/architecture.png) (rebuild it from this diagram with
+`python scripts/build_diagram.py`).
+
 ```mermaid
 flowchart LR
   subgraph Phone["On the phone (no model, no network)"]
@@ -58,7 +61,7 @@ flowchart LR
     O -- tools --> T["investigate_payment<br/>draft_* x3<br/>payee_history, recent_transactions<br/>ask_household<br/>remember_trusted_payee"]
     T -- agent as tool --> I["Investigator<br/>Strands Agent<br/>structured output: Verdict"]
     H1["PolicyHook<br/>BeforeToolCallEvent"] -. refuses .-> O
-    H2["AuditHook<br/>AfterToolCallEvent"] -. audit.jsonl .-> O
+    H2["AuditHook<br/>AfterToolCallEvent"] -. "audit.jsonl" .-> O
     O --- M["Amazon Bedrock<br/>Nova Pro by default"]
     I --- M
     T -- ask_household --> X["Interrupt<br/>session saved<br/>File or S3 SessionManager"]
@@ -150,6 +153,13 @@ To check this machine is ready for Bedrock (credentials, region, model access) a
 
 ```bash
 python scripts/aws_check.py
+```
+
+And to run the whole thing on Bedrock in one command — scan, interrupt, answer, resume — and write the
+transcript to `docs/bedrock-run.md`:
+
+```bash
+python scripts/bedrock_run.py
 ```
 
 With Amazon Bedrock (default model `us.amazon.nova-pro-v1:0`, override with `MUNSHI_BEDROCK_MODEL`; region from
@@ -248,13 +258,6 @@ entrypoint and the tests.
   unusual payment if it is large, and not at all if it is small.
 - `audit.jsonl`, `inbox.json` and `household.json` hold payees, amounts and the last digits of accounts in
   plain files on the device (or in the AgentCore session). There is no encryption or retention policy yet.
-- Not yet run end to end on Bedrock, and the reason is worth stating exactly. Credentials and model access on
-  the author's account check out (`scripts/aws_check.py` passes both, and `ListFoundationModels` returns Nova
-  Pro), but the account is on the AWS free plan, whose Bedrock quota *Model invocation max tokens per day for
-  Amazon Nova Pro* reads `0.0` and is marked not adjustable in Service Quotas. Every `Converse` call therefore
-  comes back `ThrottlingException: Too many tokens per day`, in every region tried. `scripts/bedrock_run.py`
-  does the whole run and writes the transcript to `docs/bedrock-run.md` in one command the moment that quota
-  is non-zero.
 - With real models so far: qwen2.5:3b through Ollama drove the whole loop,
   from investigation to interrupt to resume ([the audit log](docs/real-model-run.md)), though as the investigator
   it sometimes fails structured output and the rules answer, as the card records. granite3.2:8b could not call
